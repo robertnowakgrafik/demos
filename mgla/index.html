@@ -1,0 +1,559 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Mgła Tea House</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Mgła is a small tea house where every tea is weighed to the gram and brewed by the clock. A scroll-driven site in five chapters.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..800&family=Newsreader:opsz,wght@6..72,400..600&display=swap">
+<style>
+.ss-seq{position:relative;height:var(--ss-scroll,500vh);background:var(--ss-bg,#fff)}
+.ss-seq .ss-stage{position:sticky;top:var(--ss-top,0px);height:calc(100vh - var(--ss-top,0px));height:calc(100svh - var(--ss-top,0px));overflow:hidden;background:var(--ss-bg,#fff)}
+.ss-seq .ss-canvas,.ss-seq .ss-poster{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ss-seq .ss-poster{object-fit:var(--ss-fit,contain);transition:opacity .4s}
+.ss-seq.ss-ready .ss-poster{opacity:0;pointer-events:none}
+.ss-seq .ss-beat{position:absolute;max-width:min(420px,40vw);opacity:0;visibility:hidden;will-change:opacity,transform}
+.ss-seq .ss-left{left:6vw;top:50%;margin-top:-4em}
+.ss-seq .ss-right{right:6vw;top:50%;margin-top:-4em;text-align:right}
+.ss-seq .ss-bottom{left:0;right:0;bottom:8vh;margin:auto;text-align:center;max-width:min(720px,88vw)}
+@media (max-width:760px){
+  .ss-seq .ss-left,.ss-seq .ss-right{left:16px;right:16px;top:auto;bottom:calc(10vh + env(safe-area-inset-bottom,0px));margin:0;max-width:none;text-align:left}
+}
+.ss-seq.ss-static{height:auto}
+.ss-seq.ss-static .ss-stage{position:relative;height:auto;overflow:visible}
+.ss-seq.ss-static .ss-canvas{display:none}
+.ss-seq.ss-static .ss-poster{position:relative;height:70vh;opacity:1}
+.ss-seq.ss-static .ss-beat{position:relative;inset:auto;margin:24px auto;max-width:720px;padding:0 16px;visibility:visible;text-align:left}
+
+html{overflow-x:clip}
+.st-pin{position:relative;height:var(--len,400vh)}
+.st-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+
+/* A. colour stage: one product per step, giant word behind it */
+.st-steps .st-stage{background:#222;color:#fff;transition:background-color .9s cubic-bezier(.6,0,.2,1)}
+.st-item{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.st-item.is-active{pointer-events:auto}
+.st-word{position:absolute;font-size:clamp(3rem,17vw,19rem);font-weight:800;letter-spacing:-.04em;line-height:1;white-space:nowrap;opacity:0;filter:blur(28px);transform:scale(1.06);transition:opacity .7s,filter .7s,transform .9s}
+.st-prod{position:relative;width:min(38vw,62vh);height:auto;transform:translateY(130vh) rotate(18deg);transition:transform 1s cubic-bezier(.6,0,.2,1);filter:drop-shadow(0 40px 40px rgba(0,0,0,.35));will-change:transform}
+.st-meta{position:absolute;inset:auto 4vw 4vh 4vw;display:flex;justify-content:space-between;align-items:end;gap:1rem;opacity:0;transition:opacity .5s}
+.st-pct{position:absolute;top:10vh;right:4vw;font-size:clamp(2rem,5vw,4.5rem);font-weight:800;opacity:0;transition:opacity .5s}
+.is-active .st-word{opacity:1;filter:none;transform:none}
+.is-active .st-prod{transform:translateY(calc((var(--lp,.5) - .5) * -6vh)) rotate(calc((var(--lp,.5) - .5) * 10deg))}
+.is-past .st-prod{transform:translateY(-130vh) rotate(-18deg)}
+.is-active .st-meta,.is-active .st-pct{opacity:1;transition-delay:.35s}
+.st-dots{position:absolute;left:50%;bottom:4vh;translate:-50% 0;display:flex;gap:8px;z-index:2}
+.st-dots button{width:10px;height:10px;border-radius:99px;border:1.5px solid currentColor;background:none;padding:0;cursor:pointer;transition:width .4s,background .4s}
+.st-dots button.on{width:26px;background:currentColor}
+
+/* B. same shot, different hour */
+.st-day .st-stage{background:#000}
+.st-day img[data-time]{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.st-card{position:absolute;right:4vw;top:14vh;width:min(320px,80vw);padding:1.25rem;background:#fff;color:#111;border-radius:4px}
+.st-clock{display:block;font-size:clamp(2.5rem,5vw,4rem);font-weight:700;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.st-tabs{display:flex;gap:6px;margin-top:1rem;font-size:.75rem}
+.st-tabs span{padding:.2em .7em;border-radius:99px;opacity:.4}
+.st-tabs span.on{background:#111;color:#fff;opacity:1}
+
+/* C. lid off, then one cell in colour at a time */
+.st-box .st-stage{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:4vw;padding:0 4vw;background:#f1efeb;color:#111}
+.st-tray{position:relative;width:min(34vw,62vh);aspect-ratio:1;display:grid;grid-template-columns:repeat(var(--cols),1fr);box-shadow:0 30px 60px rgba(0,0,0,.25)}
+.st-cell{background-image:var(--img);background-size:calc(var(--cols)*100%) calc(var(--rows)*100%);transition:filter .5s}
+.st-tray.focus .st-cell:not(.on){filter:grayscale(1) brightness(.55)}
+.st-lid{position:absolute;inset:-2%;width:104%;height:104%;object-fit:cover;z-index:1;box-shadow:0 20px 40px rgba(0,0,0,.3);will-change:transform}
+.st-list{list-style:none;margin:0;padding:0;justify-self:start}
+.st-list li{padding:.35em 0;opacity:.45;cursor:pointer;transition:opacity .3s}
+.st-list li small{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s}
+.st-list li small>span{overflow:hidden}
+.st-list li.on{opacity:1;font-weight:700}
+.st-list li.on small{grid-template-rows:1fr;font-weight:400}
+
+@media (max-width:760px){
+  .st-prod{width:min(72vw,46vh)}
+  .st-card{left:16px;right:16px;top:auto;bottom:16px;width:auto}
+  .st-box .st-stage{grid-template-columns:1fr;grid-template-rows:auto auto 1fr;align-content:center;gap:16px;padding:72px 16px 16px}
+  .st-tray{width:min(70vw,38vh);justify-self:center}
+  .st-list{display:flex;flex-wrap:wrap;gap:0 14px;font-size:.85rem}
+  .st-list li small{display:none}
+  .st-list li.on small{display:block;position:absolute;left:16px;right:16px;bottom:16px}
+}
+/* reduced motion / editors: unpin everything, show all content stacked */
+.st-static.st-pin{height:auto}
+.st-static .st-stage{position:relative;height:auto;overflow:visible;padding-block:8vh}
+.st-static .st-item{position:relative;inset:auto;min-height:70vh;background:var(--bg)}
+.st-static .st-word{opacity:1;filter:none;transform:none}
+.st-static .st-prod{transform:none}
+.st-static .st-meta,.st-static .st-pct{opacity:1}
+.st-static .st-dots,.st-static .st-lid{display:none}
+.st-static.st-day img[data-time]{position:relative;height:60vh}
+.st-static.st-day img[data-time]~img[data-time]{display:none}
+
+</style>
+<style>
+/* Layout: five pinned scenes, each driven by its own scroll progress: film hero in chapters, colour collection with giant names, one shopfront through the day, a tasting box opened cell by cell, and a closing booking. */
+:root{
+  --night:#0c0c0c;     /* hero frames ground, measured from the film */
+  --paper:#f1efe9;     /* rice paper */
+  --ink:#141412;
+  --ink-2:#55534c;
+  --steam:#e9ece6;     /* text on dark scenes */
+  --accent:#4f6b3a;    /* tea-leaf green for actions */
+  --display:"Schibsted Grotesk",ui-sans-serif,"Helvetica Neue",Arial,sans-serif;
+  --text:"Newsreader",ui-serif,Georgia,serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{overflow-x:clip;background:var(--night)}
+body{background:var(--night);color:var(--steam);font-family:var(--text);font-size:19px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.04em;line-height:.95;margin:0;text-wrap:balance}
+p{margin:0;text-wrap:pretty}
+a{color:inherit}
+:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.skip{position:absolute;left:-9999px}.skip:focus{left:16px;top:16px;z-index:60;background:var(--paper);color:var(--ink);padding:12px 16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;border-radius:999px;border:0;background:var(--paper);color:var(--ink);font:600 16px/1 var(--display);text-decoration:none;cursor:pointer;transition:transform .2s var(--ease),background-color .2s var(--ease)}
+.btn:hover{background:#fff}.btn:active{transform:scale(.97)}
+
+/* nav: one bar over light and dark scenes, so it inverts what is under it */
+.nav{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:40;mix-blend-mode:difference;color:#fff;pointer-events:none}
+.nav .in{display:flex;align-items:center;justify-content:space-between;gap:24px;height:72px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.nav a{pointer-events:auto;text-decoration:none}
+.nav .mark{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.05em}
+.nav nav{display:flex;gap:32px;font:500 16px var(--display)}
+.nav .book{display:inline-flex;align-items:center;min-height:44px;padding:0 20px;border-radius:999px;box-shadow:inset 0 0 0 1.5px #fff;font:600 15px var(--display)}
+@media (max-width:820px){.nav nav{display:none}}
+
+/* 1. film hero */
+.ss-seq .ss-beat{max-width:min(460px,40vw);color:var(--steam)}
+.ss-beat h1,.ss-beat h2{font-size:clamp(48px,6vw,92px)}
+.ss-beat p{font-size:20px;margin-top:20px;max-width:30ch}
+.ss-beat .btn{margin-top:28px}
+.ss-seq .ss-left{top:auto;bottom:14vh;margin-top:0}
+.ss-scrim{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#0c0c0ccc 0,#0c0c0c66 34%,#0c0c0c00 60%)}
+
+/* 2. collection on colour */
+.st-steps .st-stage{background:#1f2b1d}
+.st-word{font-family:var(--display);font-weight:800;letter-spacing:-.05em;font-size:clamp(64px,15.5vw,240px)}
+.st-prod{width:min(37vw,64vh);filter:none} /* shadow is baked into the image: no filter on a moving layer */
+.st-word{filter:none;transform:scale(1.06) translateY(2vh);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1)}
+.is-active .st-word{transform:none}
+/* unlit cells cross-fade to a pre-made grey image instead of a CSS grayscale filter */
+.st-cell{position:relative}
+.st-cell::after{content:"";position:absolute;inset:0;background-image:var(--img-grey);background-size:inherit;background-position:inherit;opacity:0;transition:opacity .5s}
+.st-tray.focus .st-cell:not(.on){filter:none}
+.st-tray.focus .st-cell:not(.on)::after{opacity:1}
+.st-pct{font-family:var(--display);top:14vh;right:4vw;font-size:clamp(40px,6vw,96px);letter-spacing:-.04em}
+.st-pct small{font-size:.32em;font-weight:500;letter-spacing:0;display:block;text-align:right;margin-top:6px}
+.st-meta{font-size:18px;inset:auto 4vw 9vh 4vw}
+.st-meta p{max-width:34ch}
+.st-meta .brew{font-family:var(--display);font-size:16px;font-weight:500;font-variant-numeric:tabular-nums;text-align:right}
+.st-meta .brew b{display:block;font-size:30px;letter-spacing:-.02em;font-weight:700}
+.st-title{position:absolute;left:4vw;top:14vh;max-width:22ch;z-index:2}
+.st-title h2{font-size:clamp(32px,3.4vw,52px)}
+.st-title p{font-size:17px;margin-top:12px;opacity:.85;max-width:28ch}
+
+/* 3. day */
+.st-day .st-stage img[data-time]{transition:none}
+.st-card{border-radius:2px;padding:24px;background:var(--paper);color:var(--ink);font-size:17px}
+.st-card h2{font-size:22px;letter-spacing:-.02em;margin-bottom:8px}
+.st-clock{font-family:var(--display);font-weight:700;letter-spacing:-.05em;font-size:clamp(48px,5.4vw,80px);line-height:1;margin-bottom:12px}
+.st-tabs{font-family:var(--display)}
+.st-card [data-copy]{min-height:4.5em}
+
+/* 4. box */
+.st-box .st-stage{background:var(--paper);color:var(--ink)}
+.st-box h2{position:relative;z-index:2;font-size:clamp(36px,3.8vw,60px);max-width:11ch;justify-self:end;text-align:right}
+.st-box .lede{display:block;font-family:var(--text);font-weight:400;font-size:18px;letter-spacing:0;line-height:1.45;margin-top:16px;color:var(--ink-2)}
+.st-tray{box-shadow:0 30px 60px rgba(40,30,10,.28)}
+.st-list{font-family:var(--display);font-size:18px}
+.st-list li{min-height:32px}
+.st-list li small{font-family:var(--text);font-size:16px;color:var(--ink-2);max-width:26ch}
+
+/* 5. booking */
+.close{position:relative;min-height:100svh;display:grid;align-items:end;overflow:hidden}
+.close img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.close::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#0c0c0cf2 0,#0c0c0caa 38%,#0c0c0c00 70%)}
+.close .in{position:relative;z-index:1;padding-block:0 12vh;padding-left:max(24px,4vw);padding-right:max(24px,4vw);max-width:1200px}
+.close h2{font-size:clamp(48px,7vw,112px);max-width:12ch}
+.close p{font-size:20px;margin-top:20px;max-width:44ch}
+form{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px;max-width:640px}
+form label{flex-basis:100%;font:500 15px var(--display)}
+form input{flex:1 1 260px;min-height:52px;border:0;border-radius:999px;padding:0 22px;background:#ffffff1f;color:var(--steam);font:400 18px var(--text);box-shadow:inset 0 0 0 1.5px #ffffff59}
+form input::placeholder{color:#e9ece699}
+form input[aria-invalid=true]{box-shadow:inset 0 0 0 2px #ff9b8a}
+.msg{flex-basis:100%;min-height:26px;font-size:17px}
+footer{padding-block:64px 40px;padding-left:max(24px,4vw);padding-right:max(24px,4vw);background:var(--night)}
+footer .name{font-family:var(--display);font-weight:800;font-size:clamp(120px,30vw,460px);line-height:.75;letter-spacing:-.07em;margin:0 0 32px -.04em;color:var(--steam)}
+footer p{font-size:15px;color:#a6a8a1;max-width:80ch}
+
+@media (max-width:760px){
+  .ss-scrim{background:linear-gradient(0deg,#0c0c0cee 0,#0c0c0c99 40%,#0c0c0c00 70%)}
+  .ss-seq .ss-left{bottom:calc(8vh + env(safe-area-inset-bottom,0px))}
+  .ss-seq .ss-beat{max-width:none}
+  .st-title{top:11vh;left:16px;right:16px}
+  .st-title p{display:none}
+  .st-title{right:40%}
+  .st-pct{top:11vh;bottom:auto;right:16px;font-size:44px}
+  .st-meta{inset:auto 16px 9vh 16px;flex-direction:column;align-items:flex-start}
+  .st-meta .brew{text-align:left}
+  .st-prod{width:min(68vw,48vh)}
+  .st-box h2{justify-self:start;text-align:left;font-size:30px}
+  .st-box .lede{display:none}
+}
+/* reduced motion: the collection becomes a plain stack, one tin per colour field */
+.st-static .st-title{position:relative;top:auto;left:auto;right:auto;padding:14vh 4vw 4vh}
+.st-static .st-item{display:flex;flex-direction:column;align-items:center;gap:24px;min-height:0;padding:10vh 4vw 8vh}
+.st-static .st-word{position:relative;font-size:clamp(48px,13vw,200px)}
+.st-static .st-prod{width:min(64vw,420px);margin-top:-14vh}
+.st-static .st-pct,.st-static .st-meta{position:static;inset:auto;width:100%}
+.st-static .st-pct{text-align:right}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav"><div class="in">
+  <a class="mark" href="#top">Mgła</a>
+  <nav aria-label="Sections"><a href="#teas">Teas</a><a href="#hours">Hours</a><a href="#box">Tasting box</a></nav>
+  <a class="book" href="#book">Book a tasting</a>
+</div></header>
+
+<main id="main">
+<!-- 1. film hero: one continuous shot, chapters change with the scroll -->
+<section class="ss-seq" id="top" data-src="frames" data-count="121" data-fit="cover" data-bg="#0c0c0c" style="--ss-scroll:560vh;--ss-bg:#0c0c0c" aria-label="Brewing a pot of sencha">
+  <div class="ss-stage">
+    <img class="ss-poster" src="frames/0001.webp" alt="A glass teapot of green tea on a walnut counter by a misty window" fetchpriority="high">
+    <div class="ss-scrim" aria-hidden="true"></div>
+    <div class="ss-beat ss-left" data-in="0" data-out=".2"><h1>Leaves, rolled tight.</h1><p>Mgła is a small tea house. Every tea here is weighed to the gram and brewed by the clock.</p><a class="btn" href="#book">Book a tasting</a></div>
+    <div class="ss-beat ss-left" data-in=".26" data-out=".46"><h2>Water at 75 °C.</h2><p>Hot enough to open a sencha, cool enough to keep it sweet.</p></div>
+    <div class="ss-beat ss-left" data-in=".52" data-out=".72"><h2>Sixty seconds.</h2><p>The first steep is the shortest. The same leaves give three more.</p></div>
+    <div class="ss-beat ss-left" data-in=".8" data-out="1.1"><h2>Then the room goes quiet.</h2><p>Five teas on the shelf, a nine-cell tasting box, and a window that changes all day.</p></div>
+  </div>
+</section>
+
+<!-- 2. the collection: one tin per step, the colour of the room follows the tin -->
+<section class="st-pin st-steps" id="teas" style="--len:560vh" aria-labelledby="teas-h">
+  <div class="st-stage">
+    <div class="st-title"><h2 id="teas-h">Five teas, five tins.</h2><p>Scroll to change the tea. The room takes the colour of the tin.</p></div>
+    <div class="st-item" data-bg="#1f2b1d">
+      <b class="st-word" aria-hidden="true">GYOKURO</b>
+      <img class="st-prod" src="img/tin-gyokuro.webp" alt="Moss green tin of Gyokuro">
+      <strong class="st-pct">55°<small>water</small></strong>
+      <div class="st-meta"><p><b>Gyokuro.</b> Shaded for three weeks before picking, so it tastes of broth and sweet peas.</p><div class="brew"><b>8 g · 60 ml</b>120 s · 64 zł / 50 g</div></div>
+    </div>
+    <div class="st-item" data-bg="#c4d39a" data-ink="#1b2210">
+      <b class="st-word" aria-hidden="true">SENCHA</b>
+      <img class="st-prod" src="img/tin-sencha.webp" alt="Spring green tin of Sencha">
+      <strong class="st-pct">75°<small>water</small></strong>
+      <div class="st-meta"><p><b>Sencha.</b> The first May picking, steamed for forty seconds. Grassy, bright, a little salty.</p><div class="brew"><b>5 g · 200 ml</b>60 s · 38 zł / 50 g</div></div>
+    </div>
+    <div class="st-item" data-bg="#4a2615">
+      <b class="st-word" aria-hidden="true">HOJICHA</b>
+      <img class="st-prod" src="img/tin-hojicha.webp" alt="Copper brown tin of Hojicha">
+      <strong class="st-pct">95°<small>water</small></strong>
+      <div class="st-meta"><p><b>Hojicha.</b> Stems and leaves roasted over charcoal. Toasty, low in caffeine, good after four.</p><div class="brew"><b>4 g · 200 ml</b>30 s · 29 zł / 50 g</div></div>
+    </div>
+    <div class="st-item" data-bg="#202736">
+      <b class="st-word" aria-hidden="true">EARL GREY</b>
+      <img class="st-prod" src="img/tin-earlgrey.webp" alt="Slate blue tin of Earl Grey">
+      <strong class="st-pct">95°<small>water</small></strong>
+      <div class="st-meta"><p><b>Earl Grey.</b> Keemun black tea with cold-pressed bergamot and a few cornflower petals.</p><div class="brew"><b>3 g · 250 ml</b>180 s · 27 zł / 50 g</div></div>
+    </div>
+    <div class="st-item" data-bg="#b39e6c" data-ink="#1e1a10">
+      <b class="st-word" aria-hidden="true">GENMAICHA</b>
+      <img class="st-prod" src="img/tin-genmaicha.webp" alt="Rice cream tin of Genmaicha">
+      <strong class="st-pct">85°<small>water</small></strong>
+      <div class="st-meta"><p><b>Genmaicha.</b> Sencha with toasted, puffed brown rice. Tastes like popcorn and hay.</p><div class="brew"><b>5 g · 200 ml</b>45 s · 26 zł / 50 g</div></div>
+    </div>
+    <div class="st-dots" aria-label="Choose a tea"></div>
+  </div>
+</section>
+
+<!-- 3. the same shopfront through the day -->
+<section class="st-pin st-day" id="hours" style="--len:420vh" aria-labelledby="hours-h">
+  <div class="st-stage">
+    <img data-time="07:00" src="img/shop-0700.webp" alt="The Mgła shopfront at dawn, lamps lit inside">
+    <img data-time="11:00" src="img/shop-1100.webp" alt="" loading="lazy">
+    <img data-time="16:00" src="img/shop-1600.webp" alt="" loading="lazy">
+    <img data-time="22:00" src="img/shop-2200.webp" alt="" loading="lazy">
+    <aside class="st-card">
+      <h2 id="hours-h">The window, all day</h2>
+      <output class="st-clock">07:00</output>
+      <p data-copy>Doors open at seven for the early sencha. The kettle is already at 75 °C.</p>
+      <p data-copy hidden>Tastings start on the hour, six seats at the counter, forty minutes each.</p>
+      <p data-copy hidden>Hojicha hour. The sun reaches the jars and the shop smells of toasted rice.</p>
+      <p data-copy hidden>Closed. One lamp stays on so the jars can be seen from the street.</p>
+      <div class="st-tabs" aria-hidden="true"></div>
+    </aside>
+  </div>
+</section>
+
+<!-- 4. the tasting box: lid off, then one cell at a time -->
+<section class="st-pin st-box" id="box" style="--len:520vh" aria-labelledby="box-h">
+  <div class="st-stage">
+    <h2 id="box-h">Nine teas in one oak box.<span class="lede">Ten grams of each, enough for three pots. Scroll to lift the lid, then walk through the cells.</span></h2>
+    <div class="st-tray" style="--img:url(img/box-open.webp);--img-grey:url(img/box-open-grey.webp);--cols:3;--rows:3"><img class="st-lid" src="img/box-lid.webp" alt=""></div>
+    <ol class="st-list">
+      <li>Sencha<small><span>Steamed green, first picking.</span></small></li>
+      <li>Silver needle<small><span>White tea, only the unopened buds.</span></small></li>
+      <li>Keemun<small><span>Black tea with a cocoa finish.</span></small></li>
+      <li>Rooibos<small><span>Red bush, no caffeine, for children too.</span></small></li>
+      <li>Hojicha<small><span>Roasted stems, low caffeine.</span></small></li>
+      <li>Genmaicha<small><span>Green tea with puffed rice.</span></small></li>
+      <li>Matcha<small><span>Stone-ground, whisk 2 g in 70 ml.</span></small></li>
+      <li>Blue Earl Grey<small><span>Bergamot and cornflower petals.</span></small></li>
+      <li>Chamomile<small><span>Whole flowers, for after ten.</span></small></li>
+    </ol>
+  </div>
+</section>
+
+<!-- 5. booking -->
+<section class="close" id="book" aria-labelledby="book-h">
+  <img src="img/shop-2200.webp" alt="" loading="lazy">
+  <div class="in">
+    <h2 id="book-h">Book a seat at the counter.</h2>
+    <p>Saturday tastings at 11:00, 12:00 and 13:00. Six people, five teas, one hour. 90 zł, the tasting box to take home is included.</p>
+    <form id="form" novalidate>
+      <label for="email">Email for the confirmation</label>
+      <input id="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+      <button class="btn" type="submit" id="send">Book Saturday</button>
+      <p class="msg" id="msg" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer>
+  <p class="name" aria-hidden="true">Mgła</p>
+  <p>Mgła is a fictional tea house made for a design demo; prices and opening hours are invented, brewing temperatures and times are standard ones. The film, the shopfront at four hours, the tins and the tasting box were generated with AI (Higgsfield: GPT Image 2.6 and Kling 3.0) and cut into a scroll-driven sequence. All text is live HTML. The booking form is a demo and sends nothing.</p>
+</footer>
+
+<script>
+/*! scroll-seq.js — scroll-scrubbed image sequence, zero dependencies, multi-instance */
+(function () {
+  'use strict';
+  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function init(root) {
+    if (root.__ss) return; root.__ss = 1;
+    var d = root.dataset;
+    var small = Math.min(innerWidth, innerHeight) < 700 || innerWidth < 900;
+    var base = ((small && d.srcMobile) || d.src).replace(/\/$/, '');
+    var N = +((small && d.countMobile) || d.count);
+    var pad = +(d.pad || 4), ext = d.ext || 'webp', prefix = d.prefix || '';
+    var fit = d.fit || 'contain', bg = d.bg || '#ffffff';
+    var stage = root.querySelector('.ss-stage');
+    var beats = [].slice.call(root.querySelectorAll('[data-in]'));
+    var canvas = document.createElement('canvas');
+    canvas.className = 'ss-canvas'; canvas.setAttribute('aria-hidden', 'true');
+    stage.insertBefore(canvas, stage.firstChild);
+    var ctx = canvas.getContext('2d', { alpha: false });
+    var url = function (i) { return base + '/' + prefix + String(i + 1).padStart(pad, '0') + '.' + ext; };
+
+    // sticky dies inside any ancestor with overflow other than visible/clip — tell the developer which one
+    var htmlVisible = getComputedStyle(document.documentElement).overflowY === 'visible';
+    for (var el = root.parentElement; el && el !== document.documentElement; el = el.parentElement) {
+      if (el === document.body && htmlVisible) continue; // body overflow propagates to the viewport — harmless
+      var cs = getComputedStyle(el);
+      if (/(hidden|auto|scroll)/.test(cs.overflowX + cs.overflowY)) console.warn('[scroll-seq] position:sticky blocked by overflow on', el, '— set overflow-x:clip on it');
+    }
+    var editor = document.body.classList.contains('elementor-editor-active');
+    if (RM || editor) { root.classList.add('ss-static'); beats.forEach(function (b) { b.style.opacity = 1; }); return; }
+
+    // coarse-to-fine load order: first, last, then every 32nd, 16th ... frame
+    var imgs = new Array(N), order = [0, N - 1], seen = new Uint8Array(N), cur = 0, started = false;
+    seen[0] = seen[N - 1] = 1;
+    [32, 16, 8, 4, 2, 1].forEach(function (s) { for (var i = 0; i < N; i += s) if (!seen[i]) { seen[i] = 1; order.push(i); } });
+    function worker() {
+      if (cur >= order.length) return;
+      var i = order[cur++], im = new Image();
+      im.decoding = 'async';
+      im.onload = function () { imgs[i] = im; if (i === 0) root.classList.add('ss-ready'); dirty = true; worker(); };
+      im.onerror = worker;
+      im.src = url(i);
+    }
+    function startLoading() { if (started) return; started = true; for (var k = 0; k < 6; k++) worker(); }
+    function nearest(i) {
+      if (imgs[i]) return imgs[i];
+      for (var k = 1; k < N; k++) { if (imgs[i - k]) return imgs[i - k]; if (imgs[i + k]) return imgs[i + k]; }
+      return null;
+    }
+
+    var cw = 0, ch = 0, dpr = 1, dirty = true;
+    function resize() {
+      var r = Math.min(devicePixelRatio || 1, 2), w = canvas.clientWidth, h = canvas.clientHeight;
+      if (!w || !h || (w === cw && h === ch && r === dpr)) return; // ignore mobile URL-bar resizes
+      cw = w; ch = h; dpr = r;
+      canvas.width = Math.round(w * r); canvas.height = Math.round(h * r); dirty = true;
+    }
+    function draw(img, alpha) {
+      var s = (fit === 'cover' ? Math.max : Math.min)(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+      var w = img.naturalWidth * s, h = img.naturalHeight * s;
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+      ctx.globalAlpha = 1;
+    }
+
+    function progress() {
+      var r = root.getBoundingClientRect(), range = r.height - stage.offsetHeight;
+      return range > 0 ? Math.min(1, Math.max(0, -r.top / range)) : 0;
+    }
+    var target = 0, head = 0, last = 0, visible = true, lastP = -1;
+    function beatsAt(p) {
+      beats.forEach(function (b) {
+        var a = +b.dataset.in, z = +b.dataset.out, f = 0.04, o;
+        o = p < a - f || p > z + f ? 0 : p < a ? (p - a + f) / f : p > z ? (z + f - p) / f : 1;
+        b.style.opacity = o.toFixed(3);
+        b.style.transform = 'translateY(' + ((1 - o) * (p < a ? 24 : -24)).toFixed(1) + 'px)';
+        b.style.visibility = o < 0.01 ? 'hidden' : 'visible';
+      });
+    }
+    function tick(now) {
+      requestAnimationFrame(tick);
+      if (!visible) { last = now; return; }
+      resize();
+      var p = progress();
+      target = p * (N - 1);
+      var dt = Math.min((now - (last || now)) / 1000, 0.1); last = now;
+      head += (target - head) * (1 - Math.exp(-dt * 12)); // frame-rate independent smoothing
+      if (Math.abs(target - head) < 0.01) head = target;
+      if (p !== lastP) { beatsAt(p); lastP = p; }
+      var i = Math.floor(head), t = head - i, a = nearest(i), b = t > 0.02 && i + 1 < N ? imgs[i + 1] : null;
+      if (!a) return;
+      if (!dirty && a === pa && b === pb && (!b || Math.abs(t - pt) < 0.005)) return; // nothing changed
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      draw(a, 1); if (b) draw(b, t);           // crossfade between neighbouring frames
+      pa = a; pb = b; pt = t; dirty = false;
+    }
+    var pa = null, pb = null, pt = 0;
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (e) {
+        e.forEach(function (x) { if (x.isIntersecting) startLoading(); });
+      }, { rootMargin: '1200px 0px' }).observe(root);
+      new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(root);
+    } else startLoading();
+    requestAnimationFrame(tick);
+  }
+
+  function boot() { [].forEach.call(document.querySelectorAll('.ss-seq[data-src]'), init); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  window.ScrollSeq = { init: init, boot: boot };
+})();
+
+</script>
+<script>
+/*! scroll-story.js — pinned chapter modules driven by scroll progress, zero dependencies */
+(function () {
+  'use strict';
+  var RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $ = function (r, s) { return [].slice.call(r.querySelectorAll(s)); };
+
+  // calls fn(progress 0..1) whenever the pinned section's progress changes
+  function pin(root, fn) {
+    var stage = root.querySelector('.st-stage'), last = -1, visible = true;
+    if ('IntersectionObserver' in window) new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(root);
+    (function tick() {
+      requestAnimationFrame(tick);
+      if (!visible) return;
+      var r = root.getBoundingClientRect(), range = r.height - stage.offsetHeight;
+      var p = range > 0 ? Math.min(1, Math.max(0, -r.top / range)) : 0;
+      if (p !== last) { last = p; fn(p); }
+    })();
+  }
+  function goTo(root, p) { // scroll so that the section sits at progress p
+    var top = root.getBoundingClientRect().top + scrollY;
+    scrollTo({ top: top + p * (root.offsetHeight - innerHeight), behavior: 'smooth' });
+  }
+
+  // A. steps: scroll picks the step, CSS transitions play the change (timed, not scrubbed)
+  function steps(root) {
+    var stage = root.querySelector('.st-stage'), items = $(root, '.st-item'), dots = root.querySelector('.st-dots'), cur = -1, n = items.length;
+    items.forEach(function (el, i) {
+      var b = document.createElement('button');
+      b.setAttribute('aria-label', (i + 1) + ' / ' + n);
+      b.onclick = function () { goTo(root, (i + .5) / n); };
+      dots.appendChild(b);
+    });
+    pin(root, function (p) {
+      var x = Math.min(n - 1e-6, p * n), i = Math.floor(x);
+      stage.style.setProperty('--lp', (x - i).toFixed(3)); // progress inside the step → small drift of the product
+      if (i === cur) return; cur = i;
+      stage.style.backgroundColor = items[i].dataset.bg;
+      stage.style.color = items[i].dataset.ink || '';
+      items.forEach(function (el, k) { el.classList.toggle('is-active', k === i); el.classList.toggle('is-past', k < i); });
+      $(dots, 'button').forEach(function (d, k) { d.classList.toggle('on', k === i); });
+    });
+  }
+
+  // B. day: stills of one locked shot crossfade, the clock interpolates between their times
+  function day(root) {
+    var imgs = $(root, 'img[data-time]'), clock = root.querySelector('.st-clock'), copy = $(root, '[data-copy]'), tabs = root.querySelector('.st-tabs'), n = imgs.length;
+    var mins = imgs.map(function (im) { var t = im.dataset.time.split(':'); return t[0] * 60 + +t[1]; });
+    imgs.forEach(function (im) { var s = document.createElement('span'); s.textContent = im.dataset.time; tabs.appendChild(s); });
+    pin(root, function (p) {
+      var x = p * (n - 1), i = Math.min(n - 2, Math.floor(x)), t = x - i;
+      t = Math.min(1, Math.max(0, (t - .2) / .6)); // hold on each still, blend only in the middle 60 %
+      imgs.forEach(function (im, k) { im.style.opacity = k <= i ? 1 : k === i + 1 ? t : 0; });
+      var m = Math.round((mins[i] + (mins[i + 1] - mins[i]) * t) / 5) * 5;
+      clock.textContent = String(m / 60 | 0).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+      var a = t > .5 ? i + 1 : i;
+      copy.forEach(function (c, k) { c.hidden = k !== a; });
+      $(tabs, 'span').forEach(function (s, k) { s.classList.toggle('on', k === a); });
+    });
+  }
+
+  // C. box: the lid slides off, then scroll walks through the cells — one in colour, the rest grey
+  function box(root) {
+    var tray = root.querySelector('.st-tray'), lid = root.querySelector('.st-lid'), list = $(root, '.st-list li');
+    var cs = getComputedStyle(tray), cols = +cs.getPropertyValue('--cols'), rows = +cs.getPropertyValue('--rows'), n = cols * rows, cells = [];
+    var LID = .25, START = .32; // lid is gone at 25 %, first cell lights up at 32 %
+    for (var k = 0; k < n; k++) {
+      var c = document.createElement('div'); c.className = 'st-cell';
+      c.style.backgroundPosition = (k % cols) / (cols - 1 || 1) * 100 + '% ' + Math.floor(k / cols) / (rows - 1 || 1) * 100 + '%';
+      tray.appendChild(c); cells.push(c);
+    }
+    list.forEach(function (li, k) { li.onclick = function () { goTo(root, START + (k + .5) / n * (1 - START)); }; });
+    pin(root, function (p) {
+      var o = Math.min(1, p / LID);
+      lid.style.transform = 'translateY(' + (-o * 125) + '%) rotate(' + (-o * 4) + 'deg)';
+      lid.style.visibility = o === 1 ? 'hidden' : 'visible';
+      var a = p < START ? -1 : Math.min(n - 1, Math.floor((p - START) / (1 - START) * n));
+      tray.classList.toggle('focus', a >= 0);
+      cells.forEach(function (c, k) { c.classList.toggle('on', k === a); });
+      list.forEach(function (li, k) { li.classList.toggle('on', k === a); });
+    });
+  }
+
+  function boot() {
+    var mods = { '.st-steps': steps, '.st-day': day, '.st-box': box };
+    Object.keys(mods).forEach(function (sel) {
+      $(document, sel).forEach(function (root) {
+        if (root.__st) return; root.__st = 1;
+        if (RM || document.body.classList.contains('elementor-editor-active')) {
+          root.classList.add('st-static');
+          if (sel === '.st-steps') $(root, '.st-item').forEach(function (el) { el.style.setProperty('--bg', el.dataset.bg); el.style.color = el.dataset.ink || ''; });
+          else mods[sel](root);
+          return;
+        }
+        mods[sel](root);
+      });
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  window.ScrollStory = { boot: boot, pin: pin };
+})();
+
+</script>
+<script>
+(function(){
+  var form = document.getElementById('form'), email = document.getElementById('email'), msg = document.getElementById('msg'), send = document.getElementById('send');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim());
+    email.setAttribute('aria-invalid', ok ? 'false' : 'true');
+    if (!ok){ msg.textContent = 'That email address looks incomplete. Check the part after the @.'; email.focus(); return; }
+    send.disabled = true; send.textContent = 'Booking…';
+    setTimeout(function(){ send.disabled = false; send.textContent = 'Book Saturday'; msg.textContent = 'Seat held for ' + email.value.trim() + ' on Saturday at 11:00, in this demo. Nothing was sent: Mgła is a fictional tea house.'; }, 700);
+  });
+})();
+</script>
+
+</body></html>

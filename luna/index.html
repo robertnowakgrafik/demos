@@ -1,0 +1,458 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Łuna Eau de Parfum</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Łuna is an amber that smells of the hour after sunset: bitter orange, smoked tea and warm resin. Try a 2 ml sample before the bottle.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Hanken+Grotesk:wght@400..600&display=swap">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"How long does Łuna last?","acceptedAnswer":{"@type":"Answer","text":"Six to eight hours on skin, and a day or more on wool."}},
+{"@type":"Question","name":"Is it sweet?","acceptedAnswer":{"@type":"Answer","text":"Less than most ambers. The smoke and the bitter orange keep it dry."}},
+{"@type":"Question","name":"Who is it for?","acceptedAnswer":{"@type":"Answer","text":"Anyone. There is no men's or women's version."}},
+{"@type":"Question","name":"What is the concentration?","acceptedAnswer":{"@type":"Answer","text":"Eau de parfum, 18 per cent aromatic compounds."}},
+{"@type":"Question","name":"Can I return the bottle?","acceptedAnswer":{"@type":"Answer","text":"Unopened, within 30 days. The sample exists so you will not need to."}},
+{"@type":"Question","name":"Where is it made?","acceptedAnswer":{"@type":"Answer","text":"Blended and bottled by hand in batches of 300."}}]}</script>
+<style>
+.ss-seq{position:relative;height:var(--ss-scroll,500vh);background:var(--ss-bg,#fff)}
+.ss-seq .ss-stage{position:sticky;top:var(--ss-top,0px);height:calc(100vh - var(--ss-top,0px));height:calc(100svh - var(--ss-top,0px));overflow:hidden;background:var(--ss-bg,#fff)}
+.ss-seq .ss-canvas,.ss-seq .ss-poster{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ss-seq .ss-poster{object-fit:var(--ss-fit,contain);transition:opacity .4s}
+.ss-seq.ss-ready .ss-poster{opacity:0;pointer-events:none}
+.ss-seq .ss-beat{position:absolute;max-width:min(420px,40vw);opacity:0;visibility:hidden;will-change:opacity,transform}
+.ss-seq .ss-left{left:6vw;top:50%;margin-top:-4em}
+.ss-seq .ss-right{right:6vw;top:50%;margin-top:-4em;text-align:right}
+.ss-seq .ss-bottom{left:0;right:0;bottom:8vh;margin:auto;text-align:center;max-width:min(720px,88vw)}
+@media (max-width:760px){
+  .ss-seq .ss-left,.ss-seq .ss-right{left:16px;right:16px;top:auto;bottom:calc(10vh + env(safe-area-inset-bottom,0px));margin:0;max-width:none;text-align:left}
+}
+.ss-seq.ss-static{height:auto}
+.ss-seq.ss-static .ss-stage{position:relative;height:auto;overflow:visible}
+.ss-seq.ss-static .ss-canvas{display:none}
+.ss-seq.ss-static .ss-poster{position:relative;height:70vh;opacity:1}
+.ss-seq.ss-static .ss-beat{position:relative;inset:auto;margin:24px auto;max-width:720px;padding:0 16px;visibility:visible;text-align:left}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+.lenis.lenis-autoToggle {
+  transition-property: overflow;
+  transition-duration: 1ms;
+  transition-behavior: allow-discrete;
+}
+
+</style>
+<style>
+/* Layout: the film is the hero (bottle centre, beats alternate left and right), then the notes on a time axis, a short ritual, the sample offer, FAQ, and the same offer again. */
+:root{
+  --night:#03060c;    /* measured from the film's background */
+  --night-2:#0b0f1a;  /* one tonal step up for sections */
+  --ink:#efe8dc;      /* warm white */
+  --ink-2:#a9a59c;
+  --amber:#e39a3b;    /* the liquid, used for actions and the time cursor */
+  --orange:#ef7b2a; --tea:#b9a689; --resin:#c9862b; /* note colours for the chart */
+  --display:"Bodoni Moda",ui-serif,Didot,"Times New Roman",serif;
+  --text:"Hanken Grotesk",ui-sans-serif,"Helvetica Neue",Arial,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{overflow-x:clip;background:var(--night)}
+body{background:var(--night);color:var(--ink);font-family:var(--text);font-size:18px;line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px;margin-inline:auto;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:500;font-variation-settings:"opsz" 96;letter-spacing:-.02em;line-height:.98;margin:0;text-wrap:balance}
+p{margin:0;text-wrap:pretty}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+.skip{position:absolute;left:-9999px}.skip:focus{left:16px;top:16px;z-index:60;background:var(--ink);color:var(--night);padding:12px 16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 26px;border:0;border-radius:0;background:var(--amber);color:#1a0f02;font:600 16px/1 var(--text);text-decoration:none;cursor:pointer;transition:transform .2s var(--ease),background-color .2s var(--ease)}
+.btn:hover{background:#f0ad55}.btn:active{transform:scale(.98)}
+.link{font-size:16px;text-underline-offset:4px}
+
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:41;background:var(--night)}
+.bar{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:40;background:var(--night)}
+.bar .wrap{display:flex;align-items:center;justify-content:space-between;height:72px}
+.mark{font-family:var(--display);font-size:28px;font-weight:500;text-decoration:none;letter-spacing:.02em}
+.bar .btn{min-height:44px;padding:0 20px;font-size:15px}
+
+/* hero sequence */
+.ss-seq .ss-beat{max-width:min(380px,28vw)}
+.ss-seq .ss-left{left:max(24px,6vw)}.ss-seq .ss-right{right:max(24px,6vw)}
+.ss-beat h1{font-size:clamp(72px,9vw,144px);font-weight:500}
+.ss-beat h2{font-size:clamp(40px,4.4vw,68px);font-style:italic;font-weight:400}
+.ss-beat p{margin-top:20px;font-size:19px;color:var(--ink)}
+.ss-beat .row{display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin-top:28px}
+.ss-beat small{display:block;margin-top:12px;font-size:15px;color:var(--ink-2)}
+.ss-seq .ss-bottom h2{font-style:normal;font-size:clamp(40px,5vw,76px)}
+
+/* sections */
+section.s{padding-block:160px}
+.s h2{font-size:clamp(44px,5.6vw,88px)}
+.s .lead{font-size:20px;max-width:46ch;margin-top:24px;color:var(--ink)}
+.notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:72px}
+.note figure{margin:0;position:relative;aspect-ratio:4/5;overflow:hidden;background:var(--night-2)}
+.note img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .5s var(--ease),transform .8s var(--ease)}
+.note h3{font-size:34px;font-style:italic;font-weight:400;margin-top:20px}
+.note p{margin-top:8px;color:var(--ink-2);max-width:34ch}
+.note .when{display:block;margin-top:12px;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
+.wear{margin-top:96px;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:center}
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.chart text{font:13px var(--text);fill:var(--ink-2)}
+.ctl label{display:flex;justify-content:space-between;align-items:baseline;font-size:15px;margin-bottom:8px}
+.ctl output{font-family:var(--display);font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;height:44px;-webkit-appearance:none;appearance:none;background:none;cursor:pointer;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:#ffffff3a}
+input[type=range]::-moz-range-track{height:2px;background:#ffffff3a}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--amber);margin-top:-10px}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--amber);border:0}
+.now{margin-top:20px;font-size:19px;min-height:3.2em}
+.fine{margin-top:16px;font-size:14px;color:var(--ink-2)}
+.ritual{background:var(--night-2)}
+.ritual ol{list-style:none;padding:0;margin:64px 0 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:48px;counter-reset:r}
+.ritual li{counter-increment:r}
+.ritual li::before{content:counter(r);display:block;font-family:var(--display);font-style:italic;font-size:72px;line-height:1;color:var(--amber);margin-bottom:16px}
+.ritual h3{font-size:30px;font-weight:500}
+.ritual p{margin-top:10px;color:var(--ink-2);max-width:32ch}
+.offer{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:64px;align-items:end}
+.offer .price{font-family:var(--display);font-size:clamp(80px,10vw,150px);line-height:.9;font-variant-numeric:lining-nums}
+.offer .price small{font-size:.24em;font-family:var(--text);display:block;margin-top:12px;line-height:1.4;color:var(--ink-2)}
+.offer ul{margin:24px 0 32px;padding-left:20px;color:var(--ink)}
+.offer li+li{margin-top:6px}
+.faq{max-width:880px}
+.faq details{box-shadow:inset 0 -1px 0 #ffffff22}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:24px;align-items:center;min-height:72px;font-family:var(--display);font-size:26px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--text);font-size:26px;color:var(--amber);transition:transform .25s var(--ease)}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{padding:0 0 24px;color:var(--ink-2);max-width:60ch}
+.final{text-align:left}
+form{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px;max-width:620px}
+form label{flex-basis:100%;font-size:15px}
+form input{flex:1 1 260px;min-height:50px;border:0;border-radius:0;padding:0 18px;background:#ffffff14;color:var(--ink);font:400 18px var(--text);box-shadow:inset 0 -1.5px 0 #ffffff66}
+form input[aria-invalid=true]{box-shadow:inset 0 -2px 0 #ff8f7a}
+.msg{flex-basis:100%;min-height:26px;font-size:16px}
+footer{padding-block:80px 40px}
+footer .name{font-family:var(--display);font-size:clamp(120px,30vw,440px);line-height:.8;margin:0 0 32px -.04em;letter-spacing:-.02em}
+footer p{font-size:14px;color:var(--ink-2);max-width:80ch}
+.split-line{overflow:hidden;padding-bottom:.06em}
+
+@media (max-width:900px){
+  .notes{grid-template-columns:minmax(0,1fr)}
+  .note figure{aspect-ratio:5/4}
+  .wear,.offer{grid-template-columns:minmax(0,1fr);gap:32px}
+  .ritual ol{grid-template-columns:minmax(0,1fr);gap:40px}
+  section.s{padding-block:104px}
+}
+@media (max-width:760px){
+  .ss-seq .ss-beat{max-width:none}
+  .ss-seq .ss-right{text-align:left}
+  .ss-beat h1{font-size:clamp(64px,20vw,96px)}
+  .ss-scrim{background:linear-gradient(0deg,#03060cf0 0,#03060c99 38%,#03060c00 64%)}
+}
+.ss-scrim{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#03060cc4 0,#03060c66 26%,#03060c00 42%,#03060c00 58%,#03060c66 74%,#03060cc4 100%)}
+@media (max-width:760px){.ss-scrim{background:linear-gradient(0deg,#03060cf0 0,#03060c99 38%,#03060c00 64%)}}
+@media (prefers-reduced-motion:reduce){.btn,.note img{transition:none}}
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar"><div class="wrap"><a class="mark" href="#top">Łuna</a><a class="btn" href="#sample">Order a sample</a></div></header>
+
+<main id="main">
+<section class="ss-seq" id="top" data-src="frames" data-count="121" data-fit="cover" data-bg="#03060c" style="--ss-scroll:560vh;--ss-bg:#03060c" aria-label="Łuna, the bottle in motion">
+  <div class="ss-stage">
+    <img class="ss-poster" src="frames/0001.webp" alt="A square bottle of amber perfume with a black stone-shaped cap on a basalt slab" fetchpriority="high">
+    <div class="ss-scrim" aria-hidden="true"></div>
+    <div class="ss-beat ss-left" data-in="0" data-out=".16">
+      <h1>Łuna</h1>
+      <p>An amber that smells of the hour after sunset: bitter orange, smoked tea and warm resin.</p>
+      <div class="row"><a class="btn" href="#sample">Order a 2 ml sample</a><a class="link" href="#notes">The three notes</a></div>
+      <small>25 zł, credited to the bottle within 30 days.</small>
+    </div>
+    <div class="ss-beat ss-right" data-in=".22" data-out=".4"><h2>It opens with bitter orange.</h2><p>Bright and a little sour for the first twenty minutes.</p></div>
+    <div class="ss-beat ss-left" data-in=".46" data-out=".64"><h2>Then smoked tea and iris.</h2><p>The middle hours are dry, like a room where someone has just put out a candle.</p></div>
+    <div class="ss-beat ss-right" data-in=".7" data-out=".86"><h2>It settles into amber.</h2><p>Benzoin and birch resin stay close to the skin for six to eight hours.</p></div>
+    <div class="ss-beat ss-left" data-in=".9" data-out="1.1"><h2>Try it before the bottle.</h2><p>A 2 ml sample for 25 zł, taken off the bottle if you come back for it.</p><div class="row"><a class="btn" href="#sample">Order a 2 ml sample</a></div></div>
+  </div>
+</section>
+
+<section class="s" id="notes" aria-labelledby="notes-h">
+  <div class="wrap">
+    <h2 id="notes-h" data-split>Three notes, in the order you meet them.</h2>
+    <p class="lead">A perfume changes as its lightest molecules leave first. Move the time below and see which part of Łuna you would be smelling.</p>
+    <div class="notes">
+      <article class="note" data-note="0"><figure><img src="img/note-orange.webp" alt="A curl of bitter orange peel with oil droplets and pink peppercorns" loading="lazy"></figure><h3>Bitter orange</h3><p>Cold-pressed peel with a pinch of pink pepper. The first thing you notice and the first to go.</p><span class="when">Strongest in the first 30 minutes</span></article>
+      <article class="note" data-note="1"><figure><img src="img/note-tea.webp" alt="A heap of smoked black tea leaves with a thread of smoke and a slice of iris root" loading="lazy"></figure><h3>Smoked tea and iris</h3><p>Lapsang-style black tea, dried over pine, softened by orris root.</p><span class="when">Strongest between 1 and 3 hours</span></article>
+      <article class="note" data-note="2"><figure><img src="img/note-amber.webp" alt="Glowing chunks of amber resin and benzoin on a curl of birch bark" loading="lazy"></figure><h3>Amber and birch</h3><p>Benzoin, labdanum and a trace of birch tar. Warm, resinous, slightly leathery.</p><span class="when">From 2 hours to the end of the day</span></article>
+    </div>
+    <div class="wear">
+      <svg class="chart" id="chart" viewBox="0 0 640 300" role="img" aria-label="How strongly each note is perceived over ten hours on skin"></svg>
+      <div class="ctl">
+        <label for="t">Time on skin <output id="tOut" for="t">0 h 15 min</output></label>
+        <input id="t" type="range" min="0" max="600" step="5" value="15">
+        <p class="now" id="now" aria-live="polite"></p>
+        <p class="fine">Typical evaporation curves for each family of notes. Skin, heat and fabric shift them by an hour either way.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="s ritual" aria-labelledby="rit-h">
+  <div class="wrap">
+    <h2 id="rit-h" data-split>How to wear it.</h2>
+    <ol>
+      <li><h3>Two sprays, not five</h3><p>One on the inside of each wrist. Łuna is an eau de parfum at 18 per cent; more is just louder.</p></li>
+      <li><h3>Do not rub</h3><p>Rubbing warms the skin and burns through the orange. Let it dry for a minute.</p></li>
+      <li><h3>One on wool</h3><p>A scarf or a coat collar holds the amber for a day or longer.</p></li>
+    </ol>
+  </div>
+</section>
+
+<section class="s" id="sample" aria-labelledby="sample-h">
+  <div class="wrap offer">
+    <div>
+      <h2 id="sample-h" data-split>Try it before the bottle.</h2>
+      <ul>
+        <li>A 2 ml spray, about 30 applications</li>
+        <li>25 zł, taken off the 50 ml bottle if you order it within 30 days</li>
+        <li>Sent in a card sleeve that fits a letterbox</li>
+      </ul>
+      <form id="form" novalidate>
+        <label for="email">Email for the order</label>
+        <input id="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+        <button class="btn" type="submit" id="send">Order a 2 ml sample</button>
+        <p class="msg" id="msg" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+    <p class="price">25 zł<small>Sample, 2 ml. The 50 ml bottle is 420 zł.</small></p>
+  </div>
+</section>
+
+<section class="s" aria-labelledby="faq-h" style="padding-top:0">
+  <div class="wrap faq">
+    <h2 id="faq-h" data-split style="margin-bottom:40px">Questions.</h2>
+    <details><summary>How long does it last?</summary><p>Six to eight hours on skin, and a day or more on wool.</p></details>
+    <details><summary>Is it sweet?</summary><p>Less than most ambers. The smoke and the bitter orange keep it dry.</p></details>
+    <details><summary>Who is it for?</summary><p>Anyone. There is no men's or women's version.</p></details>
+    <details><summary>What is the concentration?</summary><p>Eau de parfum, 18 per cent aromatic compounds.</p></details>
+    <details><summary>Can I return the bottle?</summary><p>Unopened, within 30 days. The sample exists so you will not need to.</p></details>
+    <details><summary>Where is it made?</summary><p>Blended and bottled by hand in batches of 300.</p></details>
+    <p style="margin-top:48px"><a class="btn" href="#sample">Order a 2 ml sample</a></p>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap">
+  <p class="name" aria-hidden="true">Łuna</p>
+  <p>Łuna is a fictional perfume made for a design demo; the brand, prices and claims are invented. The bottle film and the three note photographs were generated with AI (Higgsfield: GPT Image 2.6 for stills, Kling 3.0 for the film) and the film was cut into 121 frames that scroll scrubs on a canvas. The evaporation curves are illustrative. The sample form is a demo and sends nothing.</p>
+</div></footer>
+
+<script>
+/*! scroll-seq.js — scroll-scrubbed image sequence, zero dependencies, multi-instance */
+(function () {
+  'use strict';
+  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function init(root) {
+    if (root.__ss) return; root.__ss = 1;
+    var d = root.dataset;
+    var small = Math.min(innerWidth, innerHeight) < 700 || innerWidth < 900;
+    var base = ((small && d.srcMobile) || d.src).replace(/\/$/, '');
+    var N = +((small && d.countMobile) || d.count);
+    var pad = +(d.pad || 4), ext = d.ext || 'webp', prefix = d.prefix || '';
+    var fit = d.fit || 'contain', bg = d.bg || '#ffffff';
+    var stage = root.querySelector('.ss-stage');
+    var beats = [].slice.call(root.querySelectorAll('[data-in]'));
+    var canvas = document.createElement('canvas');
+    canvas.className = 'ss-canvas'; canvas.setAttribute('aria-hidden', 'true');
+    stage.insertBefore(canvas, stage.firstChild);
+    var ctx = canvas.getContext('2d', { alpha: false });
+    var url = function (i) { return base + '/' + prefix + String(i + 1).padStart(pad, '0') + '.' + ext; };
+
+    // sticky dies inside any ancestor with overflow other than visible/clip — tell the developer which one
+    var htmlVisible = getComputedStyle(document.documentElement).overflowY === 'visible';
+    for (var el = root.parentElement; el && el !== document.documentElement; el = el.parentElement) {
+      if (el === document.body && htmlVisible) continue; // body overflow propagates to the viewport — harmless
+      var cs = getComputedStyle(el);
+      if (/(hidden|auto|scroll)/.test(cs.overflowX + cs.overflowY)) console.warn('[scroll-seq] position:sticky blocked by overflow on', el, '— set overflow-x:clip on it');
+    }
+    var editor = document.body.classList.contains('elementor-editor-active');
+    if (RM || editor) { root.classList.add('ss-static'); beats.forEach(function (b) { b.style.opacity = 1; }); return; }
+
+    // coarse-to-fine load order: first, last, then every 32nd, 16th ... frame
+    var imgs = new Array(N), order = [0, N - 1], seen = new Uint8Array(N), cur = 0, started = false;
+    seen[0] = seen[N - 1] = 1;
+    [32, 16, 8, 4, 2, 1].forEach(function (s) { for (var i = 0; i < N; i += s) if (!seen[i]) { seen[i] = 1; order.push(i); } });
+    function worker() {
+      if (cur >= order.length) return;
+      var i = order[cur++], im = new Image();
+      im.decoding = 'async';
+      im.onload = function () { imgs[i] = im; if (i === 0) root.classList.add('ss-ready'); dirty = true; worker(); };
+      im.onerror = worker;
+      im.src = url(i);
+    }
+    function startLoading() { if (started) return; started = true; for (var k = 0; k < 6; k++) worker(); }
+    function nearest(i) {
+      if (imgs[i]) return imgs[i];
+      for (var k = 1; k < N; k++) { if (imgs[i - k]) return imgs[i - k]; if (imgs[i + k]) return imgs[i + k]; }
+      return null;
+    }
+
+    var cw = 0, ch = 0, dpr = 1, dirty = true;
+    function resize() {
+      var r = Math.min(devicePixelRatio || 1, 2), w = canvas.clientWidth, h = canvas.clientHeight;
+      if (!w || !h || (w === cw && h === ch && r === dpr)) return; // ignore mobile URL-bar resizes
+      cw = w; ch = h; dpr = r;
+      canvas.width = Math.round(w * r); canvas.height = Math.round(h * r); dirty = true;
+    }
+    function draw(img, alpha) {
+      var s = (fit === 'cover' ? Math.max : Math.min)(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight);
+      var w = img.naturalWidth * s, h = img.naturalHeight * s;
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+      ctx.globalAlpha = 1;
+    }
+
+    function progress() {
+      var r = root.getBoundingClientRect(), range = r.height - stage.offsetHeight;
+      return range > 0 ? Math.min(1, Math.max(0, -r.top / range)) : 0;
+    }
+    var target = 0, head = 0, last = 0, visible = true, lastP = -1;
+    function beatsAt(p) {
+      beats.forEach(function (b) {
+        var a = +b.dataset.in, z = +b.dataset.out, f = 0.04, o;
+        o = p < a - f || p > z + f ? 0 : p < a ? (p - a + f) / f : p > z ? (z + f - p) / f : 1;
+        b.style.opacity = o.toFixed(3);
+        b.style.transform = 'translateY(' + ((1 - o) * (p < a ? 24 : -24)).toFixed(1) + 'px)';
+        b.style.visibility = o < 0.01 ? 'hidden' : 'visible';
+      });
+    }
+    function tick(now) {
+      requestAnimationFrame(tick);
+      if (!visible) { last = now; return; }
+      resize();
+      var p = progress();
+      target = p * (N - 1);
+      var dt = Math.min((now - (last || now)) / 1000, 0.1); last = now;
+      head += (target - head) * (1 - Math.exp(-dt * 12)); // frame-rate independent smoothing
+      if (Math.abs(target - head) < 0.01) head = target;
+      if (p !== lastP) { beatsAt(p); lastP = p; }
+      var i = Math.floor(head), t = head - i, a = nearest(i), b = t > 0.02 && i + 1 < N ? imgs[i + 1] : null;
+      if (!a) return;
+      if (!dirty && a === pa && b === pb && (!b || Math.abs(t - pt) < 0.005)) return; // nothing changed
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      draw(a, 1); if (b) draw(b, t);           // crossfade between neighbouring frames
+      pa = a; pb = b; pt = t; dirty = false;
+    }
+    var pa = null, pb = null, pt = 0;
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (e) {
+        e.forEach(function (x) { if (x.isIntersecting) startLoading(); });
+      }, { rootMargin: '1200px 0px' }).observe(root);
+      new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(root);
+    } else startLoading();
+    requestAnimationFrame(tick);
+  }
+
+  function boot() { [].forEach.call(document.querySelectorAll('.ss-seq[data-src]'), init); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+  window.ScrollSeq = { init: init, boot: boot };
+})();
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/SplitText.min.js"></script>
+<script src="https://unpkg.com/lenis@1.3.27/dist/lenis.min.js"></script>
+<script>
+(function(){
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* smooth scroll + one signature reveal for section headings (premium-web-stack) */
+  if (window.gsap && window.ScrollTrigger && window.SplitText){
+    gsap.registerPlugin(ScrollTrigger, SplitText);
+    if (!reduce && window.Lenis){
+      var lenis = new Lenis({ anchors: { offset: -72 } });
+      lenis.on('scroll', ScrollTrigger.update);
+      gsap.ticker.add(function(t){ lenis.raf(t * 1000); });
+      gsap.ticker.lagSmoothing(0);
+    }
+    var mm = gsap.matchMedia();
+    mm.add('(prefers-reduced-motion: no-preference)', function(){
+      document.fonts.ready.then(function(){
+        document.querySelectorAll('[data-split]').forEach(function(el){
+          SplitText.create(el, { type: 'lines', mask: 'lines', linesClass: 'split-line', autoSplit: true, onSplit: function(s){
+            return gsap.from(s.lines, { yPercent: 105, duration: .9, ease: 'expo.out', stagger: .08, scrollTrigger: { trigger: el, start: 'top 85%', once: true } });
+          } });
+        });
+      });
+    });
+  }
+
+  /* wear-time chart: three evaporation curves, a cursor and live note intensities */
+  var NS = 'http://www.w3.org/2000/svg', svg = document.getElementById('chart'), W = 640, H = 300, L = 40, R = 16, T = 16, B = 40;
+  var COL = ['#ef7b2a', '#b9a689', '#c9862b'], NAMES = ['bitter orange', 'smoked tea and iris', 'amber and birch'];
+  function curves(h){ // h in hours, each 0..1
+    var top = Math.exp(-h / .45);
+    var heart = Math.min(1, (h / 1.6) * Math.exp(1 - h / 1.6));
+    var base = (1 - Math.exp(-h / 1.1)) * Math.exp(-Math.max(0, h - 6) / 3.2);
+    return [top, heart, base];
+  }
+  var x = function(h){ return L + h / 10 * (W - L - R); }, y = function(v){ return T + (1 - v) * (H - T - B); };
+  function el(n, a){ var e = document.createElementNS(NS, n); for (var k in a) e.setAttribute(k, a[k]); svg.appendChild(e); return e; }
+  for (var g = 0; g <= 10; g += 2){ el('line', { x1: x(g), x2: x(g), y1: T, y2: H - B, stroke: '#ffffff', 'stroke-opacity': .08 }); var tx = el('text', { x: x(g), y: H - B + 22, 'text-anchor': 'middle' }); tx.textContent = g + ' h'; }
+  el('line', { x1: L, x2: W - R, y1: H - B, y2: H - B, stroke: '#ffffff', 'stroke-opacity': .3 });
+  var ylab = el('text', { x: L - 8, y: T + 4, 'text-anchor': 'end' }); ylab.textContent = 'strong';
+  var ylab2 = el('text', { x: L - 8, y: H - B, 'text-anchor': 'end' }); ylab2.textContent = 'gone';
+  [0, 1, 2].forEach(function(i){
+    var d = ''; for (var k = 0; k <= 200; k++){ var hh = k / 20, v = curves(hh)[i]; d += (k ? 'L' : 'M') + x(hh).toFixed(1) + ' ' + y(v).toFixed(1); }
+    el('path', { d: d + 'L' + x(10) + ' ' + y(0) + 'L' + x(0) + ' ' + y(0) + 'Z', fill: COL[i], 'fill-opacity': .12, stroke: 'none' });
+    el('path', { d: d, fill: 'none', stroke: COL[i], 'stroke-width': 2.5 });
+  });
+  var cur = el('line', { y1: T - 6, y2: H - B, stroke: '#e39a3b', 'stroke-width': 2 });
+  var dots = [0, 1, 2].map(function(i){ return el('circle', { r: 6, fill: COL[i], stroke: '#03060c', 'stroke-width': 2 }); });
+  var range = document.getElementById('t'), out = document.getElementById('tOut'), now = document.getElementById('now');
+  var notes = [].slice.call(document.querySelectorAll('.note'));
+  function fmt(m){ var h = Math.floor(m / 60), mm = m % 60; return h ? (h + ' h' + (mm ? ' ' + mm + ' min' : '')) : mm + ' min'; }
+  function update(){
+    var m = +range.value, hh = m / 60, v = curves(hh);
+    cur.setAttribute('x1', x(hh)); cur.setAttribute('x2', x(hh));
+    dots.forEach(function(d, i){ d.setAttribute('cx', x(hh)); d.setAttribute('cy', y(v[i])); });
+    out.textContent = fmt(m); range.setAttribute('aria-valuetext', fmt(m));
+    notes.forEach(function(n, i){ var img = n.querySelector('img'); img.style.opacity = (.18 + .82 * v[i]).toFixed(2); img.style.transform = 'scale(' + (1 + .06 * v[i]).toFixed(3) + ')'; });
+    var order = [0, 1, 2].sort(function(a, b){ return v[b] - v[a]; }), main = order[0], second = order[1];
+    now.textContent = v[main] < .08 ? 'At ' + fmt(m) + ' almost nothing is left on skin.' :
+      'At ' + fmt(m) + ' you mostly smell ' + NAMES[main] + (v[second] > .25 ? ', with ' + NAMES[second] + ' underneath.' : '.');
+  }
+  range.addEventListener('input', update); update();
+
+  /* sample form (demo: nothing is sent) */
+  var form = document.getElementById('form'), email = document.getElementById('email'), msg = document.getElementById('msg'), send = document.getElementById('send');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim());
+    email.setAttribute('aria-invalid', ok ? 'false' : 'true');
+    if (!ok){ msg.textContent = 'That email address looks incomplete. Check the part after the @.'; email.focus(); return; }
+    send.disabled = true; send.textContent = 'Ordering…';
+    setTimeout(function(){ send.disabled = false; send.textContent = 'Order a 2 ml sample'; msg.textContent = 'Sample ordered for ' + email.value.trim() + ' in this demo. Nothing was sent: Łuna is a fictional perfume.'; }, 700);
+  });
+})();
+</script>
+
+</body></html>

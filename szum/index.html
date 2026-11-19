@@ -1,0 +1,265 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Szum Identity Generator</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="A generative identity for Szum, a fictional festival of sound and code: the name is never drawn, it builds up out of thousands of lines following a noise field.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@600..800&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a working tool first (controls left, three formats right, all from one seed), then the three rules of the system. Single committed look: the page sits on unbleached linen so the posters carry the colour. */
+:root{
+  --linen:#e6e0d1;   /* unbleached cotton from the mill */
+  --linen-2:#d8d0bd;
+  --ink:#191714;
+  --ink-2:#565048;
+  --indigo:#1c2659;  /* indigo dye, the action colour */
+  --display:"Syne",ui-sans-serif,"Arial Black",Arial,sans-serif;
+  --text:"IBM Plex Sans",ui-sans-serif,"Helvetica Neue",Arial,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{overflow-x:clip;background:var(--linen)}
+body{background:var(--linen);color:var(--ink);font-family:var(--text);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1400px;margin-inline:auto;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:-.03em;line-height:.95;margin:0;text-wrap:balance}
+p{margin:0;text-wrap:pretty}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+header .wrap{display:flex;justify-content:space-between;align-items:center;gap:24px;padding-block:20px}
+.mark{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.04em;text-decoration:none}
+header p{font-size:15px;color:var(--ink-2)}
+.intro{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:56px 48px}
+.intro h1{font-size:clamp(48px,6.4vw,104px);max-width:12ch}
+.intro p{font-size:19px;max-width:44ch}
+
+/* tool */
+.tool{display:grid;grid-template-columns:minmax(260px,330px) minmax(0,1fr);gap:40px;align-items:start;padding-bottom:120px}
+.panel{position:sticky;top:24px;display:grid;gap:24px;background:#f1ece0;padding:24px}
+.panel h2{font-size:22px;letter-spacing:-.01em}
+.field label,.panel legend{display:block;font-size:14px;font-weight:600;margin-bottom:8px;padding:0}
+.field textarea,.field input[type=text]{width:100%;border:0;border-radius:0;background:#fff;padding:12px 14px;font:400 16px/1.4 var(--text);color:var(--ink);resize:vertical}
+.field textarea{min-height:96px}
+.field small{display:block;font-size:13px;color:var(--ink-2);margin-top:6px}
+fieldset{border:0;margin:0;padding:0}
+.swatches,.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.swatches label,.modes label{position:relative;display:grid;gap:6px;justify-items:start;min-height:44px;padding:10px;background:#fff;cursor:pointer;font-size:14px}
+.swatches input,.modes input{position:absolute;opacity:0}
+.swatches i{display:block;width:100%;height:22px;background:linear-gradient(90deg,var(--a) 0 60%,var(--b) 60% 85%,var(--c) 85%)}
+.swatches label:has(input:checked),.modes label:has(input:checked){box-shadow:inset 0 0 0 2px var(--indigo)}
+.swatches label:has(input:focus-visible),.modes label:has(input:focus-visible){outline:2px solid var(--indigo);outline-offset:2px}
+input[type=range]{width:100%;accent-color:var(--indigo);height:32px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border:0;border-radius:0;background:var(--indigo);color:#f3efe4;font:600 15px/1 var(--text);cursor:pointer;transition:transform .15s var(--ease),background-color .2s var(--ease)}
+.btn:hover{background:#121a44}.btn:active{transform:scale(.97)}
+.btn.ghost{background:transparent;color:var(--indigo);box-shadow:inset 0 0 0 2px var(--indigo)}
+.status{font-size:14px;color:var(--ink-2);min-height:21px;font-variant-numeric:tabular-nums}
+.outputs{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1.33fr);grid-template-rows:auto auto;gap:24px;align-items:start}
+.outputs figure{margin:0;display:grid;gap:10px}
+.outputs .f-poster{grid-row:1/3}
+.outputs img{width:100%;height:auto;display:block;background:var(--linen-2);box-shadow:0 1px 0 #0000000d,0 18px 40px -18px #2b231740}
+.outputs figcaption{font-size:14px;color:var(--ink-2);display:flex;justify-content:space-between;gap:12px}
+.outputs .pair{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:24px;align-items:start}
+.save{font-size:14px;color:var(--ink-2);margin-top:8px}
+
+/* rules */
+.rules{background:var(--indigo);color:#efeadc;padding-block:140px}
+.rules h2{font-size:clamp(44px,5.4vw,84px);max-width:14ch;margin-bottom:64px}
+.rules ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:48px;counter-reset:r}
+.rules li{counter-increment:r;display:grid;gap:12px;align-content:start}
+.rules li::before{content:counter(r);font-family:var(--display);font-weight:800;font-size:88px;line-height:.8;color:#f2b84b}
+.rules h3{font-size:28px;letter-spacing:-.02em}
+.rules p{color:#d0cde0;max-width:36ch}
+.rules code{font-family:ui-monospace,Menlo,monospace;font-size:.9em;background:#ffffff14;padding:1px 6px}
+footer{padding-block:72px 40px}
+footer .name{color:var(--ink);font-family:var(--display);font-weight:800;font-size:calc((min(100vw,1400px) - 64px) / 4.4);white-space:nowrap;line-height:.78;letter-spacing:-.06em;margin:0 0 32px -.04em}
+footer p{font-size:14px;color:var(--ink-2);max-width:80ch}
+@media (max-width:980px){
+  .intro{grid-template-columns:minmax(0,1fr);gap:20px}
+  .tool{grid-template-columns:minmax(0,1fr)}
+  .panel{position:static}
+  .rules ol{grid-template-columns:minmax(0,1fr);gap:40px}
+}
+@media (max-width:640px){
+  .outputs{grid-template-columns:minmax(0,1fr)}
+  .outputs .f-poster{grid-row:auto}
+  .rules{padding-block:96px}
+}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+</style>
+
+<header><div class="wrap"><a class="mark" href="#top">Szum</a><p>Festival of sound and code · 21–23 May 2027</p></div></header>
+<main id="top">
+<section class="wrap intro" aria-labelledby="h1">
+  <h1 id="h1">An identity made of noise.</h1>
+  <p>Szum means noise. Its logo is never drawn: four thousand lines follow a noise field, slow down inside the letters, and the name appears where they pile up. Type a line-up and every format regenerates from it.</p>
+</section>
+
+<section class="wrap tool" aria-label="Poster generator">
+  <form class="panel" id="panel" novalidate>
+    <h2>Make a poster</h2>
+    <div class="field">
+      <label for="lineup">Line-up</label>
+      <textarea id="lineup" spellcheck="false">Kolektyw Wątek, Moiré Trio, Ania Osnowa, Szpula, Low Hum Ensemble</textarea>
+      <small>The text is the seed: the same line-up always gives the same poster.</small>
+    </div>
+    <fieldset>
+      <legend>Palette</legend>
+      <div class="swatches">
+        <label><input type="radio" name="pal" value="0" checked><i style="--a:#1c2659;--b:#ece6d6;--c:#f2b84b"></i>Indigo</label>
+        <label><input type="radio" name="pal" value="1"><i style="--a:#e8e2d3;--b:#1d1b18;--c:#c2462e"></i>Linen</label>
+        <label><input type="radio" name="pal" value="2"><i style="--a:#2b1810;--b:#f0c9a4;--c:#f06a2f"></i>Rust</label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Field</legend>
+      <div class="modes">
+        <label><input type="radio" name="mode" value="noise" checked>Noise</label>
+        <label><input type="radio" name="mode" value="vortex">Vortex</label>
+        <label><input type="radio" name="mode" value="weave">Weave</label>
+      </div>
+    </fieldset>
+    <div class="field">
+      <label for="dens">Lines <span id="densOut">4 000</span></label>
+      <input id="dens" type="range" min="1500" max="8000" step="500" value="4000">
+    </div>
+    <div class="row"><button class="btn" type="submit">Generate</button><button class="btn ghost" type="button" id="shuffle">Try another seed</button></div>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+  </form>
+
+  <div class="outputs">
+    <figure class="f-poster"><img id="o-poster" alt="Szum festival poster, 2:3" width="800" height="1200"><figcaption><span>Poster, 2:3, 800 × 1200</span><span id="seedA"></span></figcaption></figure>
+    <div class="pair">
+      <figure><img id="o-square" alt="Szum festival square post" width="900" height="900"><figcaption><span>Post, 1:1</span></figcaption></figure>
+      <figure><img id="o-story" alt="Szum festival story, 9:16" width="540" height="960"><figcaption><span>Story, 9:16</span></figcaption></figure>
+    </div>
+    <p class="save">Right-click or long-press any format to save it as a PNG.</p>
+  </div>
+</section>
+
+<section class="rules" aria-labelledby="rules-h">
+  <div class="wrap">
+    <h2 id="rules-h">Three rules hold the system together.</h2>
+    <ol>
+      <li><h3>Never draw the name</h3><p>The letters are only a map. Lines crossing them slow to a fifth of their speed and turn into a near-horizontal weave, so they leave five times as much ink there and the word builds up by itself.</p></li>
+      <li><h3>One seed, every format</h3><p>The line-up is hashed into a seed. Poster, post and story share it, so they look like siblings even though every line is different.</p></li>
+      <li><h3>Same input, same poster</h3><p>A seeded generator (<code>mulberry32</code>) and seeded Perlin noise make every poster reproducible, so a designer can fix a file months later by typing the same line-up.</p></li>
+    </ol>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap">
+  <p class="name" aria-hidden="true">Szum</p>
+  <p>Szum is a fictional festival and its line-up is invented, made for a design demo. The generator runs entirely in your browser: Perlin noise, a flow field and a text mask on canvas, with no images, libraries or AI models involved.</p>
+</div></footer>
+
+<script>
+(function(){
+  'use strict';
+  var STILL = /[?&]still/.test(location.search);
+  var PAL = [
+    { bg: '#1c2659', ink: '#ece6d6', hot: '#f2b84b', text: '#ece6d6' },
+    { bg: '#e8e2d3', ink: '#1d1b18', hot: '#c2462e', text: '#1d1b18' },
+    { bg: '#2b1810', ink: '#f0c9a4', hot: '#f06a2f', text: '#f0c9a4' },
+  ];
+  var FORMATS = [
+    { id: 'o-poster', w: 800, h: 1200, word: [.07, .36, .86], info: 'poster' },
+    { id: 'o-square', w: 900, h: 900, word: [.07, .38, .86], info: 'square' },
+    { id: 'o-story', w: 540, h: 960, word: [.08, .34, .84], info: 'story' },
+  ];
+  /* seeded randomness */
+  function hash(s){ var h = 1779033703 ^ s.length; for (var i = 0; i < s.length; i++){ h = Math.imul(h ^ s.charCodeAt(i), 3432918353); h = h << 13 | h >>> 19; } return (h ^ h >>> 16) >>> 0; }
+  function mulberry32(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  /* seeded Perlin noise */
+  function perlin(rand){
+    var p = new Uint8Array(512), g = []; for (var i = 0; i < 256; i++){ p[i] = i; var a = rand() * Math.PI * 2; g.push([Math.cos(a), Math.sin(a)]); }
+    for (i = 255; i > 0; i--){ var j = Math.floor(rand() * (i + 1)), t = p[i]; p[i] = p[j]; p[j] = t; } for (i = 0; i < 256; i++) p[i + 256] = p[i];
+    var fade = function(t){ return t * t * t * (t * (t * 6 - 15) + 10); };
+    return function(x, y){ var X = Math.floor(x), Y = Math.floor(y), xf = x - X, yf = y - Y; X &= 255; Y &= 255;
+      var d = function(ix, iy, dx, dy){ var gg = g[p[p[ix] + iy] & 255]; return gg[0] * dx + gg[1] * dy; };
+      var u = fade(xf), v = fade(yf), a = d(X, Y, xf, yf), b = d(X + 1, Y, xf - 1, yf), c = d(X, Y + 1, xf, yf - 1), e = d(X + 1, Y + 1, xf - 1, yf - 1);
+      return (a + u * (b - a)) + v * ((c + u * (e - c)) - (a + u * (b - a))); };
+  }
+  function fbm(n, x, y){ return n(x, y) * .6 + n(x * 2.1 + 7.3, y * 2.1 + 1.9) * .28 + n(x * 4.3 + 3.1, y * 4.3 + 8.7) * .12; }
+
+  /* the letters as a speed map */
+  function mask(F){
+    var c = document.createElement('canvas'); c.width = F.w; c.height = F.h; var x = c.getContext('2d');
+    var left = F.w * F.word[0], right = F.w * F.word[2], base = F.h * F.word[1];
+    x.fillStyle = '#000'; x.textBaseline = 'alphabetic';
+    var size = 100; x.font = '800 ' + size + 'px Syne, "Arial Black", sans-serif'; var w = x.measureText('SZUM').width;
+    size = size * (right - left) / w; x.font = '800 ' + size + 'px Syne, "Arial Black", sans-serif';
+    x.fillText('SZUM', left, base + size * .36);
+    return x.getImageData(0, 0, F.w, F.h).data;
+  }
+
+  function render(F, opts, done){
+    var c = document.createElement('canvas'); c.width = F.w; c.height = F.h; var x = c.getContext('2d');
+    var pal = PAL[opts.pal], rand = mulberry32(opts.seed ^ hash(F.info)), noise = perlin(mulberry32(opts.seed)), M = mask(F);
+    x.fillStyle = pal.bg; x.fillRect(0, 0, F.w, F.h);
+    var scale = 1 / 260, N = Math.round(opts.lines * F.w * F.h / (800 * 1200)), STEPS = 150, inside = function(px, py){ var ix = px | 0, iy = py | 0; return ix >= 0 && iy >= 0 && ix < F.w && iy < F.h && M[(iy * F.w + ix) * 4 + 3] > 128; };
+    var cxp = F.w * .5, cyp = F.h * .42;
+    function angle(px, py){
+      var n = fbm(noise, px * scale, py * scale);
+      if (opts.mode === 'vortex'){ var dx = px - cxp, dy = py - cyp; return Math.atan2(dy, dx) + Math.PI / 2 + n * 2.2; }
+      if (opts.mode === 'weave'){ return Math.sin(py * .018 + n * 3) * .9 + (Math.floor(py / 26) % 2 ? 0 : Math.PI) * 0 + n * 1.4; }
+      return n * Math.PI * 3.2;
+    }
+    var i = 0, chunk = 260;
+    x.lineCap = 'round';
+    function step(){
+      var end = Math.min(N, i + chunk);
+      for (; i < end; i++){
+        var px = rand() * F.w, py = rand() * F.h, hot = rand() < .06;
+        if (rand() < .3){ for (var tr = 0; tr < 30 && !inside(px, py); tr++){ px = F.w * (F.word[0] + rand() * (F.word[2] - F.word[0])); py = F.h * (F.word[1] - .14 + rand() * .2); } }
+        x.beginPath(); x.moveTo(px, py);
+        var wasIn = inside(px, py);
+        for (var s = 0; s < STEPS; s++){
+          var inn = inside(px, py), a = inn ? fbm(noise, px * scale * 3, py * scale * 3) * .9 : angle(px, py), sp = inn ? .45 : 2.2;
+          if (inn !== wasIn){ x.strokeStyle = wasIn ? pal.ink : (hot ? pal.hot : pal.ink); x.globalAlpha = wasIn ? .62 : hot ? .5 : .13; x.lineWidth = wasIn ? 1.05 : .75; x.stroke(); x.beginPath(); x.moveTo(px, py); wasIn = inn; }
+          px += Math.cos(a) * sp; py += Math.sin(a) * sp; x.lineTo(px, py);
+          if (px < -4 || py < -4 || px > F.w + 4 || py > F.h + 4) break;
+        }
+        x.strokeStyle = wasIn ? pal.ink : (hot ? pal.hot : pal.ink); x.globalAlpha = wasIn ? .62 : hot ? .5 : .13; x.lineWidth = wasIn ? 1.05 : .75; x.stroke();
+      }
+      if (i < N) requestAnimationFrame(step); else finish();
+    }
+    function finish(){
+      x.globalAlpha = 1; var m = F.w * .07, small = Math.max(13, F.w * .022), big = Math.max(18, F.w * .036);
+      x.fillStyle = pal.text; x.textBaseline = 'top';
+      x.font = '700 ' + big + 'px Syne, Arial, sans-serif'; x.fillText('21–23.05.2027', m, m);
+      x.font = '500 ' + small + 'px "IBM Plex Sans", Arial, sans-serif'; x.textAlign = 'right'; x.fillText('Festival of sound and code', F.w - m, m + 4); x.textAlign = 'left';
+      var names = opts.lineup.split(/[,\n]/).map(function(s){ return s.trim(); }).filter(Boolean).slice(0, 8);
+      x.textBaseline = 'bottom'; var y = F.h - m, lh = big * 1.18;
+      x.font = '500 ' + small + 'px "IBM Plex Sans", Arial, sans-serif'; x.fillText('Old weaving mill · three nights', m, y); y -= small * 1.9;
+      x.font = '700 ' + big + 'px Syne, Arial, sans-serif';
+      // line-up set as a ragged block, filling lines up to the margin
+      var lines = [], cur = ''; names.forEach(function(nm){ var t = cur ? cur + '  /  ' + nm : nm; if (x.measureText(t).width > F.w - 2 * m && cur){ lines.push(cur); cur = nm; } else cur = t; }); if (cur) lines.push(cur);
+      lines.reverse().forEach(function(l){ x.fillText(l, m, y); y -= lh; });
+      x.fillStyle = pal.hot; x.fillRect(m, y + lh * .25, F.w * .06, Math.max(3, F.w * .006));
+      done(c);
+    }
+    step();
+  }
+
+  var form = document.getElementById('panel'), lineup = document.getElementById('lineup'), status = document.getElementById('status'), dens = document.getElementById('dens'), densOut = document.getElementById('densOut'), extra = 0;
+  function opts(){ return { lineup: lineup.value, seed: hash(lineup.value.trim().toLowerCase()) + extra, pal: +form.querySelector('input[name=pal]:checked').value, mode: form.querySelector('input[name=mode]:checked').value, lines: +dens.value }; }
+  var token = 0;
+  function generate(){
+    var o = opts(), my = ++token, t0 = performance.now(), left = FORMATS.length;
+    status.textContent = 'Drawing ' + (o.lines).toLocaleString('en').replace(/,/g, ' ') + ' lines…';
+    document.getElementById('seedA').textContent = 'seed ' + o.seed.toString(16);
+    FORMATS.forEach(function(F){ render(F, o, function(c){ if (my !== token) return; document.getElementById(F.id).src = c.toDataURL('image/png');
+      if (--left === 0) status.textContent = 'Done in ' + ((performance.now() - t0) / 1000).toFixed(1) + ' s. Seed ' + o.seed.toString(16) + '.'; }); });
+  }
+  form.addEventListener('submit', function(e){ e.preventDefault(); generate(); });
+  document.getElementById('shuffle').addEventListener('click', function(){ extra = (extra + 7919) >>> 0; generate(); });
+  form.addEventListener('change', function(e){ if (e.target.name === 'pal' || e.target.name === 'mode') generate(); });
+  dens.addEventListener('input', function(){ densOut.textContent = (+dens.value).toLocaleString('en').replace(/,/g, ' '); });
+  dens.addEventListener('change', generate);
+  (document.fonts ? Promise.all([document.fonts.load('800 100px Syne'), document.fonts.load('700 20px Syne'), document.fonts.load('500 16px "IBM Plex Sans"')]).catch(function(){}) : Promise.resolve()).then(generate);
+})();
+</script>
+
+</body></html>

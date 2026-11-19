@@ -1,0 +1,752 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kisiel Jelly Bar</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Kisiel sets two-layer jellies by hand. Poke one: it is simulated live in your browser with real soft-body physics.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wdth,wght@75..100,400..700&display=swap">
+<style>
+/* Layout: milk-bar counter. A full-height stage where the jelly sits on a plate (left two thirds) and the recipe card (right third); below, a felt letter-board menu and an order slip. */
+:root{
+  --formica:#c9e3d3;   /* mint formica counter */
+  --formica-2:#b5d7c3; /* one tonal step */
+  --ink:#16201b;       /* dark green-black */
+  --ink-2:#3d4a43;
+  --red:#c8162d;       /* milk-bar sign red, action colour */
+  --felt:#1d1f1e;      /* letter board */
+  --letter:#f2f0ea;
+  --display:"Bricolage Grotesque",ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif;
+  --text:"Instrument Sans",ui-sans-serif,"Helvetica Neue",Arial,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{overflow-x:clip;background:var(--formica)}
+body{background:var(--formica);color:var(--ink);font-family:var(--text);font-size:18px;line-height:1.5;overflow-x:clip;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1360px;margin-inline:auto;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:-.035em;line-height:.92;margin:0;text-wrap:balance;font-variation-settings:"opsz" 96}
+p{margin:0;text-wrap:pretty}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.skip{position:absolute;left:-9999px}.skip:focus{left:16px;top:16px;z-index:50;background:var(--ink);color:#fff;padding:12px 16px}
+
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-block:20px}
+.mark{font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:-.04em;text-decoration:none;color:var(--red)}
+header nav{display:flex;gap:28px;font-size:16px}
+header nav a{text-decoration:none}
+header nav a:hover{text-decoration:underline;text-underline-offset:4px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border:0;border-radius:0;background:var(--red);color:#fff;font:600 16px/1 var(--text);text-decoration:none;cursor:pointer;transition:transform .16s var(--ease),background-color .2s var(--ease)}
+.btn:hover{background:#a90f24}.btn:active{transform:translateY(1px) scale(.98)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:var(--formica)}
+@media (max-width:760px){header nav{display:none}}
+
+/* hero stage */
+.hero{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:32px;align-items:stretch;min-height:min(860px,calc(100svh - 88px))}
+.stage{position:relative;min-height:600px}
+.gl{position:absolute;inset:0}
+#view{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#view.grabbing{cursor:grabbing}
+.copy{position:absolute;left:0;top:24px;pointer-events:none;z-index:1}
+.copy h1{font-size:clamp(56px,6.6vw,104px);max-width:8.5ch}
+.hint{position:absolute;left:0;bottom:24px;z-index:1;font-size:15px;color:var(--ink-2);display:flex;gap:16px;flex-wrap:wrap}
+.hint b{font-weight:600;color:var(--ink)}
+.card{align-self:center;background:#fbfaf6;padding:32px;display:grid;gap:24px}
+.card .lead{font-size:18px}
+.card h2{font-size:28px;letter-spacing:-.02em;line-height:1.05}
+fieldset{border:0;margin:0;padding:0;display:grid;gap:8px}
+legend{font-size:14px;font-weight:600;margin-bottom:8px;padding:0}
+.flavours{display:grid;gap:8px}
+.flavours label{display:flex;align-items:center;gap:12px;min-height:48px;padding:0 14px;cursor:pointer;background:#f0eee6;transition:background-color .2s var(--ease)}
+.flavours label:hover{background:#e7e4d9}
+.flavours input{position:absolute;opacity:0;pointer-events:none}
+.flavours .sw{width:22px;height:30px;flex:none;background:linear-gradient(var(--top) 0 58%,var(--bot) 58% 100%);border-radius:3px 3px 6px 6px}
+.flavours .nm{flex:1;font-size:16px}
+.flavours .nm small{display:block;font-size:13px;color:var(--ink-2)}
+.flavours .pr{font-variant-numeric:tabular-nums;font-size:16px}
+.flavours input:checked + .sw{outline:2px solid var(--ink);outline-offset:3px}
+.flavours label:has(input:checked){background:var(--formica-2)}
+.flavours label:has(input:focus-visible){outline:3px solid var(--ink)}
+.range label{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;font-weight:600;margin-bottom:4px}
+.range output{font-family:var(--display);font-size:28px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;height:44px;-webkit-appearance:none;appearance:none;background:none;cursor:pointer;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:6px;background:var(--formica-2)}
+input[type=range]::-moz-range-track{height:6px;background:var(--formica-2)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--red);margin-top:-10px}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--red);border:0}
+.scale{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-2)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.readout{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding-top:16px;box-shadow:inset 0 2px 0 #ece9df}
+.readout dt{font-size:13px;color:var(--ink-2)}
+.readout dd{margin:2px 0 0;font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+
+/* how */
+.how{padding-block:160px 120px}
+.how h2{font-size:clamp(44px,6vw,88px);max-width:12ch;margin-bottom:64px}
+.how ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:48px;counter-reset:s}
+.how li{counter-increment:s;display:grid;gap:12px;align-content:start}
+.how li::before{content:counter(s);font-family:var(--display);font-size:96px;font-weight:800;line-height:.8;color:var(--red);letter-spacing:-.05em}
+.how h3{font-size:30px;letter-spacing:-.02em;line-height:1.05}
+.how li p{max-width:34ch}
+
+/* letter board menu */
+.board-wrap{background:var(--ink);color:var(--letter);padding-block:120px}
+.board-wrap h2{font-size:clamp(40px,5vw,72px);margin-bottom:16px}
+.board-wrap .sub{color:#b9c4bd;margin-bottom:48px;max-width:52ch}
+.board{background-color:var(--felt);background-image:repeating-linear-gradient(0deg,#0000 0 9px,#ffffff0b 9px 10px);padding:40px clamp(20px,4vw,56px);box-shadow:0 0 0 12px #3a2c20,0 0 0 14px #251b13;margin:14px;max-width:880px}
+.board ul{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.board li{display:flex;justify-content:space-between;gap:24px;font-family:var(--text);font-stretch:85%;font-weight:600;text-transform:uppercase;letter-spacing:.12em;font-size:clamp(15px,1.9vw,22px);line-height:1.2;color:var(--letter)}
+.board li span:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+.board li.gap{height:10px}
+.board li.head{color:#e7c35a}
+
+/* order slip */
+.order{padding-block:140px}
+.order h2{font-size:clamp(44px,6vw,88px);max-width:14ch}
+form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:16px;align-items:end;margin-top:48px;max-width:1060px}
+.field label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
+.field input,.field select{width:100%;min-height:52px;border:0;border-radius:0;padding:0 14px;background:#fbfaf6;color:var(--ink);font:400 18px var(--text)}
+.field input[aria-invalid=true]{box-shadow:inset 0 -3px 0 var(--red)}
+.msg{grid-column:1/-1;min-height:24px;font-size:16px}
+.msg.err{color:#8c0f1f}
+footer{padding-block:80px 40px;background:var(--formica-2)}
+footer .name{font-family:var(--display);font-weight:800;font-size:clamp(96px,24vw,360px);line-height:.78;letter-spacing:-.06em;color:var(--red);margin:0 0 32px -.03em}
+footer p{font-size:14px;color:var(--ink-2);max-width:76ch}
+.fail{position:absolute;inset:auto 0 40% 0;text-align:center;font-size:16px}
+
+@media (max-width:980px){
+  .hero{grid-template-columns:minmax(0,1fr);min-height:0}
+  .stage{min-height:0;display:flex;flex-direction:column;gap:8px}
+  .copy,.hint{position:relative;top:auto;bottom:auto}
+  .copy h1{max-width:none}
+  .gl{position:relative;inset:auto;height:min(58svh,520px)}
+  .how ol{grid-template-columns:minmax(0,1fr);gap:40px}
+  form{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:760px){
+  .copy h1{font-size:clamp(44px,12vw,64px)}
+  .card{padding:24px}
+  .how,.order{padding-block:96px}
+  .board-wrap{padding-block:88px}
+}
+@media (prefers-reduced-motion:reduce){.btn,.flavours label{transition:none}}
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+<header><div class="wrap">
+  <a class="mark" href="#top">Kisiel</a>
+  <nav aria-label="Sections"><a href="#how">How it is set</a><a href="#menu">Menu</a><a href="#order">Order</a></nav>
+  <a class="btn" href="#order">Reserve for Saturday</a>
+</div></header>
+
+<main id="main">
+<section class="wrap hero" id="top" aria-labelledby="h1">
+  <div class="stage" id="stage">
+    <div class="copy"><h1 id="h1">A jelly you can poke.</h1></div>
+    <div class="gl" id="gl"><canvas id="view" aria-label="A two-layer jelly on a plate. Drag it to pull, drag the background to turn the plate." role="img"></canvas></div>
+    <p class="hint" id="hint"><span><b>Drag the jelly</b> to pull it</span><span><b>Drag the plate</b> to turn it</span></p>
+  </div>
+  <aside class="card" aria-labelledby="rec-h">
+    <p class="lead">Kisiel sets two-layer jellies by hand. This one is simulated live in your browser, so every poke wobbles differently.</p>
+    <h2 id="rec-h">Set your own</h2>
+    <fieldset class="flavours" id="flavours">
+      <legend>Flavour</legend>
+      <label><input type="radio" name="fl" value="0" checked><span class="sw" style="--top:#b3122e;--bot:#f1ead6"></span><span class="nm">Sour cherry<small>over elderflower panna cotta</small></span><span class="pr">16 zł</span></label>
+      <label><input type="radio" name="fl" value="1"><span class="sw" style="--top:#4a0f37;--bot:#efe6e2"></span><span class="nm">Blackcurrant<small>over cold milk</small></span><span class="pr">16 zł</span></label>
+      <label><input type="radio" name="fl" value="2"><span class="sw" style="--top:#e3a321;--bot:#f6edcf"></span><span class="nm">Quince<small>over vanilla cream</small></span><span class="pr">18 zł</span></label>
+    </fieldset>
+    <div class="range">
+      <label for="gel">Gelatine per litre <output id="gelOut" for="gel">12 g</output></label>
+      <input id="gel" type="range" min="6" max="20" step="1" value="12">
+      <div class="scale" aria-hidden="true"><span>6 g, barely sets</span><span>20 g, bouncy</span></div>
+    </div>
+    <div class="actions">
+      <button class="btn ghost" type="button" id="poke">Poke</button>
+      <button class="btn ghost" type="button" id="drop">Drop a cherry</button>
+      <button class="btn ghost" type="button" id="reset">Turn out a new one</button>
+    </div>
+    <dl class="readout" aria-live="off">
+      <div><dt>Wobble</dt><dd id="rHz">at rest</dd></div>
+      <div><dt>Volume kept</dt><dd id="rVol">100 %</dd></div>
+      <div><dt>Particles</dt><dd id="rPart">–</dd></div>
+    </dl>
+  </aside>
+</section>
+
+<section class="how wrap" id="how" aria-labelledby="how-h">
+  <h2 id="how-h">Set twice, turned out once.</h2>
+  <ol>
+    <li><h3>Panna cotta first</h3><p>Elderflower cream sets in a fluted tin for four hours at 4 °C, until the surface holds a fingerprint.</p></li>
+    <li><h3>Fruit at body heat</h3><p>The kisiel layer is poured at 30 °C, warm enough to bond, cool enough not to melt the cream beneath.</p></li>
+    <li><h3>Ten flutes, one tap</h3><p>A ten-second dip in hot water, a plate on top, one turn. The flutes are what make it ring when it wobbles.</p></li>
+  </ol>
+</section>
+
+<section class="board-wrap" id="menu" aria-labelledby="menu-h">
+  <div class="wrap">
+    <h2 id="menu-h">On the board today</h2>
+    <p class="sub">Set every morning, gone by four. Prices per portion, about 180 g.</p>
+    <div class="board" role="list" aria-label="Menu">
+      <ul>
+        <li class="head"><span>Jellies</span><span></span></li>
+        <li><span>Sour cherry / elderflower</span><span>16 zł</span></li>
+        <li><span>Blackcurrant / milk</span><span>16 zł</span></li>
+        <li><span>Quince / vanilla</span><span>18 zł</span></li>
+        <li class="gap" aria-hidden="true"></li>
+        <li class="head"><span>Kisiel by the glass</span><span></span></li>
+        <li><span>Cranberry, warm</span><span>9 zł</span></li>
+        <li><span>Rhubarb, cold</span><span>9 zł</span></li>
+        <li class="gap" aria-hidden="true"></li>
+        <li><span>Whole tin, 10 portions, order a day ahead</span><span>140 zł</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="order wrap" id="order" aria-labelledby="order-h">
+  <h2 id="order-h">Reserve a jelly for Saturday.</h2>
+  <form id="form" novalidate>
+    <div class="field"><label for="name">Name</label><input id="name" autocomplete="given-name" required></div>
+    <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="email" required placeholder="you@example.com"></div>
+    <div class="field"><label for="what">Jelly</label><select id="what"><option>Sour cherry / elderflower</option><option>Blackcurrant / milk</option><option>Quince / vanilla</option><option>Whole tin, 10 portions</option></select></div>
+    <button class="btn" type="submit" id="send">Reserve</button>
+    <p class="msg" id="msg" role="status" aria-live="polite"></p>
+  </form>
+</section>
+</main>
+
+<footer><div class="wrap">
+  <p class="name" aria-hidden="true">Kisiel</p>
+  <p>Kisiel is a fictional jelly bar made for a design and engineering demo; the menu and prices are invented. The jelly is a real-time soft-body simulation: a lattice of particles joined into tetrahedra, solved with XPBD so it keeps its volume while it bends. Rendering in Three.js. The order form is a demo and sends nothing.</p>
+</div></footer>
+
+<script>
+/* softbody.js — XPBD soft-body solver (tetrahedral lattice), zero dependencies.
+ * Works in the browser (global SoftBody) and in Node (module.exports).
+ *
+ *   const body = SoftBody.fromSDF({ sdf, min, max, h });   // build from a signed distance function
+ *   body.step(1/60);                                        // advance (substeps inside)
+ *   const emb = body.embed(surfacePositions);               // bind any render mesh once
+ *   body.skin(emb, surfacePositions);                       // deform it every frame
+ *
+ * Method: particles + edge-length constraints + tetrahedron-volume constraints,
+ * solved with XPBD (compliance is time-step independent) in small substeps.
+ */
+(function (root) {
+  'use strict';
+
+  // 5-tetrahedron split of a cube. Corner index = x + 2y + 4z.
+  // Two mirrored variants alternate by cell parity so neighbouring faces share diagonals.
+  var TETS_EVEN = [[1, 2, 4, 7], [0, 1, 2, 4], [3, 1, 2, 7], [5, 1, 4, 7], [6, 2, 4, 7]];
+  var TETS_ODD = [[0, 3, 5, 6], [1, 0, 3, 5], [2, 0, 3, 6], [4, 0, 5, 6], [7, 3, 5, 6]];
+  var VOL_ORDER = [[1, 3, 2], [0, 2, 3], [0, 3, 1], [0, 1, 2]];
+
+  function SoftBody() {
+    this.params = {
+      substeps: 10,
+      gravity: -10,
+      edgeCompliance: 0.4,     // softness lives here: 0.03 firm rubber, 0.4 jelly, 3 barely holds its shape
+      volCompliance: 0,        // keep at 0: incompressible, and it is what untangles the body after a hard squash
+      particleRadius: 0,       // collision padding around lattice points, so balls cannot slip between them
+      damping: 1.5,            // velocity damping, 1/s
+      groundY: 0,
+      groundFriction: 1        // 1 = sticks to the ground, 0 = ice
+    };
+    this.spheres = [];         // rigid balls: {pos:[3], prev:[3], vel:[3], r, invMass}
+    this.grabbed = null;
+  }
+
+  /* ---------- construction ---------- */
+
+  SoftBody.fromSDF = function (o) {
+    var sdf = o.sdf, h = o.h, min = o.min, max = o.max, density = o.density || 1;
+    var nx = Math.round((max[0] - min[0]) / h), ny = Math.round((max[1] - min[1]) / h), nz = Math.round((max[2] - min[2]) / h);
+    var sx = nx + 1, sy = ny + 1;
+    var idOf = new Map(), pts = [], tets = [];
+    function pid(i, j, k) {
+      var key = i + sx * (j + sy * k), id = idOf.get(key);
+      if (id === undefined) {
+        id = pts.length / 3; idOf.set(key, id);
+        pts.push(min[0] + i * h, min[1] + j * h, min[2] + k * h);
+      }
+      return id;
+    }
+    for (var k = 0; k < nz; k++) for (var j = 0; j < ny; j++) for (var i = 0; i < nx; i++) {
+      if (sdf(min[0] + (i + 0.5) * h, min[1] + (j + 0.5) * h, min[2] + (k + 0.5) * h) >= 0) continue;
+      var c = [];
+      for (var n = 0; n < 8; n++) c.push(pid(i + (n & 1), j + ((n >> 1) & 1), k + ((n >> 2) & 1)));
+      var T = ((i + j + k) & 1) ? TETS_ODD : TETS_EVEN;
+      for (var t = 0; t < 5; t++) tets.push(c[T[t][0]], c[T[t][1]], c[T[t][2]], c[T[t][3]]);
+    }
+    // Pull lattice points that stick out back onto the surface, so the physics
+    // boundary matches the shape instead of a staircase.
+    var e = h * 0.01;
+    for (var pass = 0; pass < 3; pass++) for (var p = 0; p < pts.length; p += 3) {
+      var x = pts[p], y = pts[p + 1], z = pts[p + 2], d = sdf(x, y, z);
+      if (d <= 1e-5) continue;
+      var gx = sdf(x + e, y, z) - sdf(x - e, y, z), gy = sdf(x, y + e, z) - sdf(x, y - e, z), gz = sdf(x, y, z + e) - sdf(x, y, z - e);
+      var gl = Math.sqrt(gx * gx + gy * gy + gz * gz) || 1;
+      pts[p] -= d * gx / gl; pts[p + 1] -= d * gy / gl; pts[p + 2] -= d * gz / gl;
+    }
+    var body = SoftBody.fromTets(new Float32Array(pts), tets, { density: density, minTetVolume: 0.3 * h * h * h / 6 });
+    body.params.particleRadius = 0.35 * h;
+    return body;
+  };
+
+  SoftBody.fromTets = function (positions, tetIds, o) {
+    o = o || {};
+    var b = new SoftBody(), density = o.density || 1, minVol = o.minTetVolume || 0;
+    var n = positions.length / 3;
+    b.numParticles = n;
+    b.pos = new Float32Array(positions);
+    b.rest = new Float32Array(positions);
+    b.prev = new Float32Array(positions);
+    b.vel = new Float32Array(n * 3);
+    var mass = new Float32Array(n), keep = [], vols = [], edgeSet = new Map();
+    for (var t = 0; t < tetIds.length; t += 4) {
+      var ids = [tetIds[t], tetIds[t + 1], tetIds[t + 2], tetIds[t + 3]];
+      var v = tetVol(b.pos, ids[0], ids[1], ids[2], ids[3]);
+      if (v < 0) { var s = ids[0]; ids[0] = ids[1]; ids[1] = s; v = -v; }
+      for (var a = 0; a < 4; a++) for (var c = a + 1; c < 4; c++) {
+        var lo = Math.min(ids[a], ids[c]), hi = Math.max(ids[a], ids[c]);
+        edgeSet.set(lo * n + hi, [lo, hi]);
+      }
+      if (v <= minVol) continue;          // sliver created by surface snapping: keep its edges, skip its volume
+      keep.push(ids[0], ids[1], ids[2], ids[3]); vols.push(v);
+      for (a = 0; a < 4; a++) mass[ids[a]] += density * v / 4;
+    }
+    b.tets = new Int32Array(keep);
+    b.numTets = vols.length;
+    b.restVol = new Float32Array(vols);
+    var edges = [], lens = [];
+    edgeSet.forEach(function (pr) {
+      var l = dist(b.pos, pr[0], pr[1]);
+      if (l > 1e-6) { edges.push(pr[0], pr[1]); lens.push(l); }
+    });
+    b.edges = new Int32Array(edges);
+    b.numEdges = lens.length;
+    b.restLen = new Float32Array(lens);
+    var total = 0; for (var i = 0; i < n; i++) total += mass[i];
+    var floor = 0.5 * total / n;         // very light particles rattle; give them a sensible minimum
+    b.invMass = new Float32Array(n);
+    for (i = 0; i < n; i++) b.invMass[i] = 1 / Math.max(mass[i], floor);
+    b.totalMass = total;
+    b.restVolume = b.volume();
+    return b;
+  };
+
+  /* ---------- simulation ---------- */
+
+  SoftBody.prototype.step = function (dt) {
+    var P = this.params, n = this.numParticles, sdt = dt / P.substeps;
+    var pos = this.pos, prev = this.prev, vel = this.vel, w = this.invMass;
+    var damp = Math.max(0, 1 - P.damping * sdt), gy = P.gravity * sdt, i, s, q;
+    for (s = 0; s < P.substeps; s++) {
+      for (i = 0; i < n; i++) {
+        q = 3 * i;
+        if (w[i] === 0) continue;
+        vel[q + 1] += gy;
+        vel[q] *= damp; vel[q + 1] *= damp; vel[q + 2] *= damp;
+        prev[q] = pos[q]; prev[q + 1] = pos[q + 1]; prev[q + 2] = pos[q + 2];
+        pos[q] += vel[q] * sdt; pos[q + 1] += vel[q + 1] * sdt; pos[q + 2] += vel[q + 2] * sdt;
+      }
+      for (i = 0; i < this.spheres.length; i++) {
+        var S = this.spheres[i];
+        S.vel[1] += gy;
+        for (q = 0; q < 3; q++) { S.prev[q] = S.pos[q]; S.pos[q] += S.vel[q] * sdt; }
+      }
+      this._solveEdges(P.edgeCompliance / (sdt * sdt));
+      this._solveVolumes(P.volCompliance / (sdt * sdt));
+      this._solveGrab();
+      this._collide(sdt);
+      var inv = 1 / sdt;
+      for (i = 0; i < n * 3; i++) vel[i] = (pos[i] - prev[i]) * inv;
+      for (i = 0; i < this.spheres.length; i++) {
+        S = this.spheres[i];
+        for (q = 0; q < 3; q++) S.vel[q] = (S.pos[q] - S.prev[q]) * inv;
+        if (S.onGround) { S.vel[0] *= 0.985; S.vel[2] *= 0.985; }
+      }
+    }
+  };
+
+  SoftBody.prototype._solveEdges = function (alpha) {
+    var pos = this.pos, w = this.invMass, E = this.edges, L = this.restLen;
+    for (var i = 0; i < this.numEdges; i++) {
+      var a = E[2 * i], b = E[2 * i + 1], wa = w[a], wb = w[b], ws = wa + wb;
+      if (ws === 0) continue;
+      var a3 = 3 * a, b3 = 3 * b;
+      var dx = pos[a3] - pos[b3], dy = pos[a3 + 1] - pos[b3 + 1], dz = pos[a3 + 2] - pos[b3 + 2];
+      var len = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      if (len < 1e-9) continue;
+      var k = -(len - L[i]) / (ws + alpha) / len;
+      pos[a3] += dx * k * wa; pos[a3 + 1] += dy * k * wa; pos[a3 + 2] += dz * k * wa;
+      pos[b3] -= dx * k * wb; pos[b3 + 1] -= dy * k * wb; pos[b3 + 2] -= dz * k * wb;
+    }
+  };
+
+  var g = new Float64Array(12);
+  SoftBody.prototype._solveVolumes = function (alpha) {
+    var pos = this.pos, w = this.invMass, T = this.tets, V0 = this.restVol;
+    for (var i = 0; i < this.numTets; i++) {
+      var wsum = 0, j, id;
+      for (j = 0; j < 4; j++) {
+        var i0 = 3 * T[4 * i + VOL_ORDER[j][0]], i1 = 3 * T[4 * i + VOL_ORDER[j][1]], i2 = 3 * T[4 * i + VOL_ORDER[j][2]];
+        var ax = pos[i1] - pos[i0], ay = pos[i1 + 1] - pos[i0 + 1], az = pos[i1 + 2] - pos[i0 + 2];
+        var bx = pos[i2] - pos[i0], by = pos[i2 + 1] - pos[i0 + 1], bz = pos[i2 + 2] - pos[i0 + 2];
+        var cx = (ay * bz - az * by) / 6, cy = (az * bx - ax * bz) / 6, cz = (ax * by - ay * bx) / 6;
+        g[3 * j] = cx; g[3 * j + 1] = cy; g[3 * j + 2] = cz;
+        wsum += w[T[4 * i + j]] * (cx * cx + cy * cy + cz * cz);
+      }
+      if (wsum === 0) continue;
+      var vol = tetVol(pos, T[4 * i], T[4 * i + 1], T[4 * i + 2], T[4 * i + 3]);
+      var k = -(vol - V0[i]) / (wsum + alpha);
+      for (j = 0; j < 4; j++) {
+        id = T[4 * i + j]; var kw = k * w[id], q = 3 * id;
+        pos[q] += g[3 * j] * kw; pos[q + 1] += g[3 * j + 1] * kw; pos[q + 2] += g[3 * j + 2] * kw;
+      }
+    }
+  };
+
+  SoftBody.prototype._collide = function () {
+    var P = this.params, pos = this.pos, prev = this.prev, w = this.invMass, n = this.numParticles, gy = P.groundY, f = P.groundFriction;
+    for (var i = 0; i < n; i++) {
+      var q = 3 * i;
+      if (pos[q + 1] < gy) {
+        pos[q + 1] = gy;
+        pos[q] += (prev[q] - pos[q]) * f; pos[q + 2] += (prev[q + 2] - pos[q + 2]) * f;
+      }
+    }
+    for (var s = 0; s < this.spheres.length; s++) {
+      var S = this.spheres[s], r = S.r + P.particleRadius, sp = S.pos, r2 = r * r;
+      for (i = 0; i < n; i++) {
+        q = 3 * i;
+        var dx = pos[q] - sp[0], dy = pos[q + 1] - sp[1], dz = pos[q + 2] - sp[2], d2 = dx * dx + dy * dy + dz * dz;
+        if (d2 >= r2 || d2 < 1e-12) continue;
+        var d = Math.sqrt(d2), ws = w[i] + S.invMass;
+        if (ws === 0) continue;
+        var c = (r - d) / d / ws, a = c * w[i], b = c * S.invMass;
+        pos[q] += dx * a; pos[q + 1] += dy * a; pos[q + 2] += dz * a;
+        sp[0] -= dx * b; sp[1] -= dy * b; sp[2] -= dz * b;
+      }
+      S.onGround = sp[1] < gy + S.r;
+      if (S.onGround) sp[1] = gy + S.r;
+    }
+  };
+
+  /* ---------- interaction ---------- */
+
+  // Soft grab: every particle within `radius` of the point follows the target, nearer ones more firmly.
+  SoftBody.prototype.grab = function (x, y, z, radius) {
+    var ids = [], wts = [], offs = [], pos = this.pos;
+    for (var i = 0; i < this.numParticles; i++) {
+      var dx = pos[3 * i] - x, dy = pos[3 * i + 1] - y, dz = pos[3 * i + 2] - z, d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      if (d < radius) { var t = 1 - d / radius; ids.push(i); wts.push(t * t); offs.push(dx, dy, dz); }
+    }
+    this.grabbed = ids.length ? { ids: ids, wts: wts, offs: offs, target: [x, y, z] } : null;
+    return !!this.grabbed;
+  };
+  SoftBody.prototype.moveGrab = function (x, y, z) { if (this.grabbed) this.grabbed.target = [x, y, z]; };
+  SoftBody.prototype.release = function () { this.grabbed = null; };
+  SoftBody.prototype._solveGrab = function () {
+    var G = this.grabbed; if (!G) return;
+    var pos = this.pos;
+    for (var i = 0; i < G.ids.length; i++) {
+      var q = 3 * G.ids[i], k = 0.5 * G.wts[i];
+      pos[q] += (G.target[0] + G.offs[3 * i] - pos[q]) * k;
+      pos[q + 1] += (G.target[1] + G.offs[3 * i + 1] - pos[q + 1]) * k;
+      pos[q + 2] += (G.target[2] + G.offs[3 * i + 2] - pos[q + 2]) * k;
+    }
+  };
+
+  // Velocity kick, strongest at (cx,cy,cz), fading to zero at `radius`.
+  SoftBody.prototype.impulse = function (vx, vy, vz, cx, cy, cz, radius) {
+    var pos = this.pos, vel = this.vel;
+    for (var i = 0; i < this.numParticles; i++) {
+      var q = 3 * i, dx = pos[q] - cx, dy = pos[q + 1] - cy, dz = pos[q + 2] - cz;
+      var t = 1 - Math.sqrt(dx * dx + dy * dy + dz * dz) / radius;
+      if (t <= 0 || this.invMass[i] === 0) continue;
+      vel[q] += vx * t; vel[q + 1] += vy * t; vel[q + 2] += vz * t;
+    }
+  };
+
+  SoftBody.prototype.addSphere = function (x, y, z, r, mass) {
+    var S = { pos: [x, y, z], prev: [x, y, z], vel: [0, 0, 0], r: r, invMass: mass > 0 ? 1 / mass : 0, onGround: false };
+    this.spheres.push(S); return S;
+  };
+
+  SoftBody.prototype.reset = function () {
+    this.pos.set(this.rest); this.prev.set(this.rest); this.vel.fill(0); this.grabbed = null;
+  };
+
+  /* ---------- measurement ---------- */
+
+  SoftBody.prototype.volume = function () {
+    var v = 0, T = this.tets;
+    for (var i = 0; i < this.numTets; i++) v += tetVol(this.pos, T[4 * i], T[4 * i + 1], T[4 * i + 2], T[4 * i + 3]);
+    return v;
+  };
+  SoftBody.prototype.kineticEnergy = function () {
+    var e = 0, v = this.vel;
+    for (var i = 0; i < this.numParticles; i++) if (this.invMass[i] > 0)
+      e += 0.5 / this.invMass[i] * (v[3 * i] * v[3 * i] + v[3 * i + 1] * v[3 * i + 1] + v[3 * i + 2] * v[3 * i + 2]);
+    return e;
+  };
+
+  /* ---------- skinning a render mesh to the lattice ---------- */
+
+  // Bind points (render-mesh vertices, in rest pose) to their enclosing tetrahedron. Call once.
+  SoftBody.prototype.embed = function (points) {
+    var m = points.length / 3, nT = this.numTets, T = this.tets, R = this.rest;
+    var inv = new Float64Array(nT * 9), org = new Float64Array(nT * 3), t, i;
+    for (t = 0; t < nT; t++) {
+      var a = 3 * T[4 * t], b = 3 * T[4 * t + 1], c = 3 * T[4 * t + 2], d = 3 * T[4 * t + 3];
+      var m00 = R[a] - R[d], m01 = R[b] - R[d], m02 = R[c] - R[d];
+      var m10 = R[a + 1] - R[d + 1], m11 = R[b + 1] - R[d + 1], m12 = R[c + 1] - R[d + 1];
+      var m20 = R[a + 2] - R[d + 2], m21 = R[b + 2] - R[d + 2], m22 = R[c + 2] - R[d + 2];
+      var det = m00 * (m11 * m22 - m12 * m21) - m01 * (m10 * m22 - m12 * m20) + m02 * (m10 * m21 - m11 * m20), id = 1 / det, o = 9 * t;
+      inv[o] = (m11 * m22 - m12 * m21) * id; inv[o + 1] = (m02 * m21 - m01 * m22) * id; inv[o + 2] = (m01 * m12 - m02 * m11) * id;
+      inv[o + 3] = (m12 * m20 - m10 * m22) * id; inv[o + 4] = (m00 * m22 - m02 * m20) * id; inv[o + 5] = (m02 * m10 - m00 * m12) * id;
+      inv[o + 6] = (m10 * m21 - m11 * m20) * id; inv[o + 7] = (m01 * m20 - m00 * m21) * id; inv[o + 8] = (m00 * m11 - m01 * m10) * id;
+      org[3 * t] = R[d]; org[3 * t + 1] = R[d + 1]; org[3 * t + 2] = R[d + 2];
+    }
+    var tet = new Int32Array(m), wt = new Float32Array(m * 4);
+    for (i = 0; i < m; i++) {
+      var px = points[3 * i], py = points[3 * i + 1], pz = points[3 * i + 2], best = -Infinity, bt = 0, b0 = 0, b1 = 0, b2 = 0;
+      for (t = 0; t < nT; t++) {
+        var x = px - org[3 * t], y = py - org[3 * t + 1], z = pz - org[3 * t + 2]; o = 9 * t;
+        var u = inv[o] * x + inv[o + 1] * y + inv[o + 2] * z, v = inv[o + 3] * x + inv[o + 4] * y + inv[o + 5] * z, w2 = inv[o + 6] * x + inv[o + 7] * y + inv[o + 8] * z;
+        var mn = Math.min(u, v, w2, 1 - u - v - w2);
+        if (mn > best) { best = mn; bt = t; b0 = u; b1 = v; b2 = w2; if (mn >= 0) break; }
+      }
+      tet[i] = bt; wt[4 * i] = b0; wt[4 * i + 1] = b1; wt[4 * i + 2] = b2; wt[4 * i + 3] = 1 - b0 - b1 - b2;
+    }
+    return { tet: tet, w: wt, count: m };
+  };
+
+  // Write deformed positions of the bound points into `out`. Call every frame.
+  SoftBody.prototype.skin = function (emb, out) {
+    var T = this.tets, P = this.pos, W = emb.w;
+    for (var i = 0; i < emb.count; i++) {
+      var t = 4 * emb.tet[i], a = 3 * T[t], b = 3 * T[t + 1], c = 3 * T[t + 2], d = 3 * T[t + 3];
+      var w0 = W[4 * i], w1 = W[4 * i + 1], w2 = W[4 * i + 2], w3 = W[4 * i + 3];
+      out[3 * i] = w0 * P[a] + w1 * P[b] + w2 * P[c] + w3 * P[d];
+      out[3 * i + 1] = w0 * P[a + 1] + w1 * P[b + 1] + w2 * P[c + 1] + w3 * P[d + 1];
+      out[3 * i + 2] = w0 * P[a + 2] + w1 * P[b + 2] + w2 * P[c + 2] + w3 * P[d + 2];
+    }
+  };
+
+  // Closed render surface for a star-shaped SDF: rays from `center`, bisected to the zero level.
+  SoftBody.surfaceFromSDF = function (sdf, center, segU, segV, maxR) {
+    var pos = [], idx = [], i, j;
+    function hit(dx, dy, dz) {
+      var lo = 0, hi = maxR;
+      for (var k = 0; k < 28; k++) {
+        var mid = (lo + hi) / 2;
+        if (sdf(center[0] + dx * mid, center[1] + dy * mid, center[2] + dz * mid) < 0) lo = mid; else hi = mid;
+      }
+      pos.push(center[0] + dx * lo, center[1] + dy * lo, center[2] + dz * lo);
+    }
+    hit(0, 1, 0);
+    for (j = 1; j < segV; j++) {
+      var ph = Math.PI * j / segV, sp = Math.sin(ph), cp = Math.cos(ph);
+      for (i = 0; i < segU; i++) { var th = 2 * Math.PI * i / segU; hit(sp * Math.cos(th), cp, sp * Math.sin(th)); }
+    }
+    hit(0, -1, 0);
+    var last = pos.length / 3 - 1;
+    for (i = 0; i < segU; i++) {
+      var n = (i + 1) % segU;
+      idx.push(0, 1 + n, 1 + i);
+      idx.push(last, 1 + (segV - 2) * segU + i, 1 + (segV - 2) * segU + n);
+      for (j = 0; j < segV - 2; j++) {
+        var a = 1 + j * segU + i, b = 1 + j * segU + n, c = a + segU, d = b + segU;
+        idx.push(a, b, c, b, d, c);
+      }
+    }
+    return { positions: new Float32Array(pos), indices: idx };
+  };
+
+  function tetVol(p, a, b, c, d) {
+    a *= 3; b *= 3; c *= 3; d *= 3;
+    var ax = p[b] - p[a], ay = p[b + 1] - p[a + 1], az = p[b + 2] - p[a + 2];
+    var bx = p[c] - p[a], by = p[c + 1] - p[a + 1], bz = p[c + 2] - p[a + 2];
+    var cx = p[d] - p[a], cy = p[d + 1] - p[a + 1], cz = p[d + 2] - p[a + 2];
+    return (ax * (by * cz - bz * cy) + ay * (bz * cx - bx * cz) + az * (bx * cy - by * cx)) / 6;
+  }
+  function dist(p, a, b) {
+    var dx = p[3 * a] - p[3 * b], dy = p[3 * a + 1] - p[3 * b + 1], dz = p[3 * a + 2] - p[3 * b + 2];
+    return Math.sqrt(dx * dx + dy * dy + dz * dz);
+  }
+
+  if (typeof module !== 'undefined' && module.exports) module.exports = SoftBody; else root.SoftBody = SoftBody;
+})(typeof self !== 'undefined' ? self : this);
+
+</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js"}}</script>
+<script type="module">
+import * as THREE from 'three';
+const $ = id => document.getElementById(id);
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const STILL = /[?&]still/.test(location.search);
+const canvas = $('view'), stage = $('gl');
+
+/* ---------- shape: fluted castle mould, two layers ---------- */
+const R1 = 1.0, R2 = 0.7, H = 1.08, FL = 10, DEPTH = .055, K = .16, h = .18;
+const cosS = H / Math.hypot(H, R1 - R2);
+const smax = (a, b, k) => { const t = Math.max(k - Math.abs(a - b), 0) / k; return Math.max(a, b) + t * t * k * .25; };
+function sdf(x, y, z){ const r = Math.hypot(x, z), th = Math.atan2(z, x), q = r / (1 + DEPTH * Math.cos(FL * th));
+  const side = (q - (R1 + (R2 - R1) * Math.pow(Math.max(0, Math.min(1, y / H)), 1.3))) * cosS; return Math.max(smax(side, y - H, K), -y); }
+const SPLIT = .42 * H;
+
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, preserveDrawingBuffer: STILL }); }
+catch (e) { canvas.hidden = true; const f = document.createElement('p'); f.className = 'fail'; f.textContent = 'This browser could not start 3D graphics (WebGL). Open the page in a current Chrome, Safari or Firefox to poke the jelly.'; stage.appendChild(f); throw e; }
+
+/* ---------- physics ---------- */
+const body = SoftBody.fromSDF({ sdf, min: [-1.19, 0, -1.19], max: [1.19, H, 1.19], h });
+const surf = SoftBody.surfaceFromSDF(sdf, [0, .35, 0], 112, 64, 2);
+const emb = body.embed(surf.positions);
+const ball = body.addSphere(.04, 1.4, .02, .22, .05);
+let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const bits = []; while (bits.length < 14 * 3){ const bx = rnd() * 1.6 - .8, by = SPLIT + .1 + rnd() * .45, bz = rnd() * 1.6 - .8; if (sdf(bx, by, bz) < -.14) bits.push(bx, by, bz); }
+const bitRest = new Float32Array(bits), bitPos = new Float32Array(bits), bitEmb = body.embed(bitRest);
+let topIdx = 0, ty = -1; for (let i = 0; i < body.numParticles; i++){ const x = body.rest[3 * i], y = body.rest[3 * i + 1], z = body.rest[3 * i + 2]; if (Math.hypot(x, z) < h && y > ty){ ty = y; topIdx = i; } }
+$('rPart').textContent = body.numParticles;
+
+const FLAV = [
+  { top: 0xb3122e, bot: 0xf1ead6, bit: 0x5a0614, name: 'Sour cherry' },
+  { top: 0x4a0f37, bot: 0xefe6e2, bit: 0x1e0618, name: 'Blackcurrant' },
+  { top: 0xe3a321, bot: 0xf6edcf, bit: 0xc26a12, name: 'Quince' },
+];
+function setGel(g){ const t = (g - 6) / 14; body.params.edgeCompliance = Math.exp(Math.log(2) + (Math.log(.05) - Math.log(2)) * t); $('gelOut').textContent = g + ' g'; }
+function dropBall(){ ball.pos[0] = (rnd() - .5) * .3; ball.pos[1] = 2.6; ball.pos[2] = (rnd() - .5) * .3; ball.prev.set(ball.pos); ball.vel[0] = ball.vel[1] = ball.vel[2] = 0; }
+function poke(){ const a = rnd() * Math.PI * 2; body.impulse(Math.cos(a) * 3.4, .6, Math.sin(a) * 3.4, 0, H, 0, 1.3); }
+setGel(+$('gel').value);
+for (let i = 0; i < 120; i++) body.step(1 / 60);
+
+/* ---------- scene ---------- */
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(30, 1, .1, 60);
+const orbit = { az: .55, el: .36, dist: 6.4, target: new THREE.Vector3(0, .5, 0) };
+function placeCamera(){ const c = Math.cos(orbit.el); camera.position.set(orbit.target.x + orbit.dist * c * Math.sin(orbit.az), orbit.target.y + orbit.dist * Math.sin(orbit.el), orbit.target.z + orbit.dist * c * Math.cos(orbit.az)); camera.lookAt(orbit.target); }
+// tiny studio for reflections: glossy translucent jelly reads as plastic without something to mirror
+const studio = new THREE.Scene();
+studio.add(new THREE.Mesh(new THREE.SphereGeometry(30, 24, 12), new THREE.MeshBasicMaterial({ color: 0x2e3a33, side: THREE.BackSide })));
+const box = (x, y, z, sx, sy, sz, k) => { const m = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), new THREE.MeshBasicMaterial({ color: new THREE.Color(k, k, k * .97) })); m.position.set(x, y, z); studio.add(m); };
+box(0, 14, 0, 14, .5, 14, 2.2); box(-14, 5, 6, .5, 8, 8, 3.0); box(13, 5, -8, .5, 6, 6, 1.4); box(0, -10, 0, 30, .5, 30, .5);
+const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(studio, .03).texture; pm.dispose();
+scene.add(new THREE.HemisphereLight(0xffffff, 0x7f948a, .3));
+const sun = new THREE.DirectionalLight(0xffffff, 1.0); sun.position.set(-2.6, 5.5, 3.2); sun.castShadow = true;
+sun.shadow.mapSize.set(1024, 1024); Object.assign(sun.shadow.camera, { left: -2.6, right: 2.6, top: 2.6, bottom: -2.6, near: 1, far: 14 }); sun.shadow.bias = -.0008; sun.shadow.radius = 6;
+scene.add(sun);
+
+const geo = new THREE.BufferGeometry();
+const posAttr = new THREE.BufferAttribute(new Float32Array(surf.positions), 3); posAttr.setUsage(THREE.DynamicDrawUsage);
+geo.setAttribute('position', posAttr); geo.setIndex(surf.indices);
+const colAttr = new THREE.BufferAttribute(new Float32Array(surf.positions.length), 3); geo.setAttribute('color', colAttr);
+geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, .5, 0), 6);
+const restY = new Float32Array(surf.positions.length / 3); for (let i = 0; i < restY.length; i++) restY[i] = surf.positions[3 * i + 1];
+const mat = new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: .12, metalness: 0, clearcoat: 1, clearcoatRoughness: .06, transparent: true, opacity: .88, envMapIntensity: .95, sheen: .3, sheenColor: new THREE.Color(0xffffff) });
+const jelly = new THREE.Mesh(geo, mat); jelly.castShadow = true; jelly.frustumCulled = false; jelly.renderOrder = 2; scene.add(jelly);
+const bitGeo = new THREE.SphereGeometry(.085, 16, 12), bitMat = new THREE.MeshPhysicalMaterial({ color: 0x5a0614, roughness: .3, clearcoat: .6 }), bitMeshes = [];
+for (let i = 0; i < bitEmb.count; i++){ const m = new THREE.Mesh(bitGeo, bitMat); m.scale.set(1, .75 + .4 * rnd(), 1.15); m.rotation.set(rnd() * 3, rnd() * 3, 0); scene.add(m); bitMeshes.push(m); }
+const cherry = new THREE.Group();
+const cb = new THREE.Mesh(new THREE.SphereGeometry(ball.r, 40, 28), new THREE.MeshPhysicalMaterial({ color: 0x4f0612, roughness: .2, clearcoat: 1, clearcoatRoughness: .05 })); cb.castShadow = true; cherry.add(cb);
+const stem = new THREE.Mesh(new THREE.CylinderGeometry(.012, .016, .42, 8), new THREE.MeshStandardMaterial({ color: 0x5b6b2c, roughness: .7 })); stem.position.set(.05, ball.r + .17, 0); stem.rotation.z = -.25; cherry.add(stem);
+scene.add(cherry);
+// milk-bar plate: white porcelain with a thin green rim band
+const plate = new THREE.Mesh(new THREE.CylinderGeometry(1.8, 1.6, .06, 96), new THREE.MeshPhysicalMaterial({ color: 0xf4f3ee, roughness: .28, clearcoat: .5 }));
+plate.position.y = -.03; plate.receiveShadow = true; plate.castShadow = true; scene.add(plate);
+const rimBand = new THREE.Mesh(new THREE.TorusGeometry(1.66, .018, 8, 160), new THREE.MeshStandardMaterial({ color: 0x2f7d5a, roughness: .4 })); rimBand.rotation.x = Math.PI / 2; rimBand.position.y = .003; scene.add(rimBand);
+const table = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), new THREE.ShadowMaterial({ opacity: .18 })); table.rotation.x = -Math.PI / 2; table.position.y = -.06; table.receiveShadow = true; scene.add(table);
+
+const cTop = new THREE.Color(), cBot = new THREE.Color(), tmp = new THREE.Color();
+function setFlavour(k){
+  const F = FLAV[k]; cTop.setHex(F.top).convertSRGBToLinear(); cBot.setHex(F.bot).convertSRGBToLinear(); bitMat.color.setHex(F.bit);
+  for (let i = 0; i < restY.length; i++){ const t = Math.min(1, Math.max(0, (restY[i] - SPLIT + .04) / .08)); tmp.copy(cBot).lerp(cTop, t); colAttr.setXYZ(i, tmp.r, tmp.g, tmp.b); }
+  colAttr.needsUpdate = true;
+}
+setFlavour(0);
+
+function resize(){ const w = stage.clientWidth, hh = stage.clientHeight; if (!w || !hh) return; renderer.setSize(w, hh, false); camera.aspect = w / hh;
+  const narrow = w / hh < 1.1; orbit.dist = narrow ? 7.6 : 6.5; orbit.target.set(narrow ? 0 : -.55, narrow ? .45 : 1.2, narrow ? 0 : .3); camera.updateProjectionMatrix(); placeCamera(); }
+new ResizeObserver(resize).observe(stage); resize();
+
+/* ---------- pointer: grab the jelly or turn the plate ---------- */
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), plane = new THREE.Plane(), hit = new THREE.Vector3(), start = new THREE.Vector3();
+let mode = null, lx = 0, ly = 0;
+function setRay(ev){ const r = canvas.getBoundingClientRect(); ndc.set((ev.clientX - r.left) / r.width * 2 - 1, -(ev.clientY - r.top) / r.height * 2 + 1); ray.setFromCamera(ndc, camera); }
+function grabAt(p){ if (body.grab(p.x, p.y, p.z, .42)){ mode = 'grab'; start.copy(p); plane.setFromNormalAndCoplanarPoint(camera.getWorldDirection(new THREE.Vector3()).negate(), start); return true; } return false; }
+function pullTo(p){ const d = p.clone().sub(start); if (d.length() > 1.1) d.setLength(1.1); body.moveGrab(start.x + d.x, Math.max(.05, start.y + d.y), start.z + d.z); }
+canvas.addEventListener('pointerdown', ev => {
+  setRay(ev); const hits = ray.intersectObject(jelly);
+  if (!(hits.length && grabAt(hits[0].point))) mode = 'orbit';
+  lx = ev.clientX; ly = ev.clientY; canvas.classList.add('grabbing'); try { canvas.setPointerCapture(ev.pointerId); } catch (e) {} ev.preventDefault();
+});
+canvas.addEventListener('pointermove', ev => {
+  if (mode === 'grab'){ setRay(ev); if (ray.ray.intersectPlane(plane, hit)) pullTo(hit); }
+  else if (mode === 'orbit'){ orbit.az -= (ev.clientX - lx) * .008; orbit.el = Math.min(1.2, Math.max(.1, orbit.el + (ev.clientY - ly) * .006)); lx = ev.clientX; ly = ev.clientY; placeCamera(); }
+});
+const end = () => { if (mode === 'grab') body.release(); mode = null; canvas.classList.remove('grabbing'); };
+canvas.addEventListener('pointerup', end); canvas.addEventListener('pointercancel', end);
+
+/* ---------- controls ---------- */
+$('gel').addEventListener('input', e => setGel(+e.target.value));
+$('poke').addEventListener('click', poke);
+$('drop').addEventListener('click', dropBall);
+$('reset').addEventListener('click', () => { body.reset(); dropBall(); });
+$('flavours').addEventListener('change', e => { setFlavour(+e.target.value); poke(); });
+
+/* ---------- loop, with a live wobble-frequency measurement at the crown ---------- */
+const DT = 1 / 60; let acc = 0, last = performance.now(), frame = 0, simT = 0, visible = true;
+let prevDx = 0, crossings = [], amp = 0;
+new IntersectionObserver(e => { visible = e[0].isIntersecting; }).observe(stage);
+function measure(){
+  const dx = body.pos[3 * topIdx] - body.rest[3 * topIdx], dz = body.pos[3 * topIdx + 2] - body.rest[3 * topIdx + 2];
+  const d = Math.abs(dx) > Math.abs(dz) ? dx : dz; amp = Math.max(amp * .985, Math.abs(d));
+  if ((prevDx < 0) !== (d < 0) && Math.abs(d - prevDx) > 1e-4){ crossings.push(simT); if (crossings.length > 6) crossings.shift(); }
+  prevDx = d;
+}
+function step(){ body.step(DT); simT += DT; measure(); }
+function render(){
+  body.skin(emb, posAttr.array); posAttr.needsUpdate = true; geo.computeVertexNormals();
+  body.skin(bitEmb, bitPos); for (let i = 0; i < bitMeshes.length; i++) bitMeshes[i].position.set(bitPos[3 * i], bitPos[3 * i + 1], bitPos[3 * i + 2]);
+  cherry.position.set(ball.pos[0], ball.pos[1], ball.pos[2]);
+  if (frame++ % 10 === 0){
+    $('rVol').textContent = (100 * body.volume() / body.restVolume).toFixed(1) + ' %';
+    const n = crossings.length; const hz = n > 2 && amp > .006 && simT - crossings[n - 1] < 1.5 ? (n - 1) / 2 / (crossings[n - 1] - crossings[0]) : 0;
+    $('rHz').textContent = hz ? hz.toFixed(1) + ' Hz' : 'at rest';
+  }
+  renderer.render(scene, camera);
+}
+function loop(now){
+  requestAnimationFrame(loop);
+  const el = Math.min(.05, (now - last) / 1000); last = now;
+  if (!visible) return;
+  acc += el; let n = 0; while (acc >= DT && n < 2){ step(); acc -= DT; n++; } if (acc > DT) acc = 0;
+  render();
+}
+if (STILL){ render(); window.__jelly = { body, poke, setFlavour, frames(n){ for (let i = 0; i < n; i++) step(); render(); },
+  pull(dx, dy){ const p = new THREE.Vector3(0, H * .92, .5); grabAt(p); pullTo(p.clone().add(new THREE.Vector3(dx, dy, 0))); for (let i = 0; i < 40; i++) step(); render(); },
+  release(){ body.release(); } }; }
+else { requestAnimationFrame(loop); if (!RM) setTimeout(poke, 800); }
+
+/* ---------- order form (demo: sends nothing) ---------- */
+const form = $('form'), msg = $('msg'), send = $('send');
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const name = $('name'), email = $('email'); let bad = null;
+  const okE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim()), okN = name.value.trim().length > 0;
+  name.setAttribute('aria-invalid', okN ? 'false' : 'true'); email.setAttribute('aria-invalid', okE ? 'false' : 'true');
+  if (!okN) bad = [name, 'Add a name so we know whose jelly it is.']; else if (!okE) bad = [email, 'That email address looks incomplete. Check the part after the @.'];
+  msg.className = 'msg' + (bad ? ' err' : '');
+  if (bad){ msg.textContent = bad[1]; bad[0].focus(); return; }
+  send.disabled = true; send.textContent = 'Reserving…';
+  setTimeout(() => { send.disabled = false; send.textContent = 'Reserve'; msg.textContent = `${$('what').value} held for ${name.value.trim()} on Saturday, in this demo. Nothing was sent: Kisiel is a fictional jelly bar.`; }, 700);
+});
+</script>
+
+</body></html>

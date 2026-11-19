@@ -1,0 +1,646 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kadr 50 f/1.2</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Kadr 50 f/1.2: a manual-focus 50 mm lens with eleven rounded aperture blades. A scroll-driven 3D product page, modelled entirely in code.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..700&display=swap">
+<style>
+/* Layout: one 760vh pinned stage (lens + beats on opposite sides), then a working lab, specs and a reservation form on the same paper ground. */
+:root{
+  --paper:#e6e5df;      /* studio sweep, warm light grey */
+  --paper-2:#d9d8d1;    /* one tonal step down */
+  --ink:#141518;        /* anodised black */
+  --ink-2:#4a4c52;      /* notes only */
+  --engrave:#d6ad1f;    /* engraving yellow from the distance scale */
+  --night:#0d1016;      /* bokeh preview ground */
+  --night-ink:#e9e7df;
+  --display:"Archivo",ui-sans-serif,"Helvetica Neue",Arial,sans-serif;
+  --text:"Archivo",ui-sans-serif,"Helvetica Neue",Arial,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:light;
+}
+html{overflow-x:clip;background:var(--paper)}
+body{background:var(--paper);color:var(--ink);font-family:var(--text);font-size:18px;line-height:1.5;overflow-x:clip;-webkit-font-smoothing:antialiased}
+*,*::before,*::after{box-sizing:border-box}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.wrap{width:100%;max-width:1360px;margin-inline:auto;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:600;font-stretch:125%;letter-spacing:-.03em;line-height:.98;margin:0;text-wrap:balance}
+p{margin:0;text-wrap:pretty}
+.skip{position:absolute;left:-9999px}.skip:focus{left:16px;top:16px;z-index:50;background:var(--ink);color:var(--paper);padding:12px 16px}
+
+/* header */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.bar{position:fixed;top:env(safe-area-inset-top,0px);left:0;right:0;z-index:20;background:var(--paper)}
+.bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:24px;height:64px}
+.mark{font-family:var(--display);font-stretch:125%;font-weight:700;font-size:20px;letter-spacing:-.02em;text-decoration:none}
+.bar nav{display:flex;gap:32px;font-size:16px}
+.bar nav a{text-decoration:none;opacity:.8;transition:opacity .2s var(--ease)}
+.bar nav a:hover{opacity:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;border:0;border-radius:999px;background:var(--ink);color:var(--paper);font:500 16px/1 var(--text);text-decoration:none;cursor:pointer;transition:transform .2s var(--ease),background-color .2s var(--ease)}
+.btn:hover{background:#000}.btn:active{transform:scale(.97)}
+.bar .btn{min-height:44px;padding:0 20px}
+@media (max-width:820px){.bar nav{display:none}}
+
+/* pinned story */
+#story{position:relative;height:760vh}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+.beat{position:absolute;top:50%;transform:translateY(-50%);width:min(440px,36vw);opacity:0;visibility:hidden;will-change:opacity,transform}
+.beat.l{left:max(24px,6vw)}
+.beat.r{right:max(24px,6vw)}
+.beat h1{font-size:clamp(48px,6.4vw,96px)}
+.beat h2{font-size:clamp(36px,3.9vw,60px);margin-bottom:24px}
+.beat p{font-size:18px;max-width:34ch}
+.beat .lead{font-size:20px;margin:24px 0 32px;max-width:30ch}
+.beat .row{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.beat .row a.plain{font-size:16px}
+#b1{opacity:1;visibility:visible}
+.big{font-family:var(--display);font-stretch:62%;font-weight:600;font-size:clamp(96px,15vw,232px);line-height:.85;letter-spacing:-.04em;font-variant-numeric:tabular-nums;white-space:nowrap}
+.big small{font-size:.32em;font-stretch:100%;letter-spacing:-.02em;margin-left:.08em}
+.unit{font-size:16px;color:var(--ink-2);margin-top:16px;max-width:30ch}
+.labels{position:absolute;inset:0;pointer-events:none}
+.lab{position:absolute;left:0;top:0;font-size:14px;line-height:1.3;white-space:nowrap;opacity:0;transition:opacity .3s var(--ease);display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-left:-.5px}
+.lab::before{content:"";width:1px;height:var(--h,44px);background:var(--ink);order:2}
+.lab.down::before{order:0}
+.lab span{order:1}
+.lab span b{display:block;font-weight:600}
+.progress{position:absolute;left:max(24px,6vw);right:max(24px,6vw);bottom:24px;display:flex;justify-content:space-between;font-size:14px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.progress output{color:var(--ink)}
+
+@media (max-aspect-ratio:17/20),(max-width:760px){
+  .beat{top:auto;bottom:calc(64px + env(safe-area-inset-bottom,0px));transform:none;left:16px!important;right:16px!important;width:auto;padding:24px 0 0}
+  .beat.l,.beat.r{text-align:left}
+  .beat h1{font-size:clamp(40px,11vw,64px)}
+  .beat h2{font-size:clamp(30px,8vw,44px);margin-bottom:12px}
+  .beat .lead{margin:12px 0 20px;font-size:18px}
+  .beat p{font-size:17px}
+  .big{font-size:clamp(88px,30vw,150px)}
+  .labels{display:none}
+  .progress{bottom:16px;left:16px;right:16px}
+}
+
+/* below the story */
+section.block{padding-block:160px}
+.kicker{font-size:16px;color:var(--ink-2);margin-bottom:16px}
+.block h2{font-size:clamp(40px,5vw,72px);max-width:14ch}
+.intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:end;margin-bottom:64px}
+.intro p{max-width:46ch}
+
+/* lab */
+#lab{background:var(--night);color:var(--night-ink)}
+#lab .kicker{color:#a8abb3}
+.labgrid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:48px;align-items:start}
+.view{position:relative;width:100%;aspect-ratio:3/2;background:#06070a}
+#bokeh{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ctrls{display:grid;gap:32px}
+.ctrl label{display:flex;justify-content:space-between;align-items:baseline;font-size:16px;margin-bottom:12px}
+.ctrl label output{font-family:var(--display);font-stretch:62%;font-size:40px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;height:44px;background:none;-webkit-appearance:none;appearance:none;cursor:pointer;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:#5b5f69}
+input[type=range]::-moz-range-track{height:2px;background:#5b5f69}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--engrave);margin-top:-11px;border:0}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--engrave);border:0}
+input[type=range]:focus-visible{outline:2px solid var(--night-ink)}
+.ticks{display:flex;justify-content:space-between;font-size:13px;color:#a8abb3;font-variant-numeric:tabular-nums;margin-top:4px}
+dl.dof{display:grid;grid-template-columns:1fr 1fr;gap:24px 32px;margin:0;padding-top:8px}
+dl.dof dt{font-size:14px;color:#a8abb3}
+dl.dof dd{margin:4px 0 0;font-size:24px;font-variant-numeric:tabular-nums}
+.note{font-size:14px;color:#a8abb3;max-width:52ch;margin-top:24px}
+
+/* specs */
+.specs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:64px}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:16px 0;vertical-align:top;font-size:18px}
+th{font-weight:400;color:var(--ink-2);width:44%;padding-right:24px}
+tr+tr th,tr+tr td{box-shadow:inset 0 1px 0 var(--paper-2)}
+.diagram{width:100%;max-width:520px;display:block;margin-top:40px}
+
+/* reserve */
+#reserve{background:var(--paper-2)}
+form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:16px;align-items:end;max-width:880px;margin-top:48px}
+.field label{display:block;font-size:14px;margin-bottom:8px;color:var(--ink-2)}
+.field input,.field select{width:100%;min-height:52px;padding:0 16px;border:0;border-radius:0;background:var(--paper);color:var(--ink);font:400 18px var(--text)}
+.field input[aria-invalid=true]{box-shadow:inset 0 -2px 0 #b3261e}
+.msg{grid-column:1/-1;font-size:16px;min-height:24px}
+.msg.err{color:#8f1d16}
+footer{padding-block:96px 48px}
+footer .name{color:var(--ink);font-family:var(--display);font-stretch:125%;font-weight:700;letter-spacing:-.05em;line-height:.8;font-size:clamp(80px,22vw,340px);margin:0 0 32px -.04em}
+footer p{font-size:14px;color:var(--ink-2);max-width:72ch}
+@media (max-width:900px){
+  section.block{padding-block:96px}
+  .intro,.labgrid,.specs{grid-template-columns:minmax(0,1fr)}
+  .intro{gap:24px}
+  form{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+<header class="bar"><div class="wrap">
+  <a class="mark" href="#top">Kadr</a>
+  <nav aria-label="Sections"><a href="#story">The lens</a><a href="#lab">Try the aperture</a><a href="#specs">Specifications</a></nav>
+  <a class="btn" href="#reserve">Reserve</a>
+</div></header>
+
+<main id="main">
+<section id="story" aria-label="Kadr 50 f/1.2, scroll to take it apart">
+  <div class="stage" id="top">
+    <canvas id="gl" aria-hidden="true"></canvas>
+    <div class="labels" id="labels" aria-hidden="true"></div>
+
+    <div class="beat l" id="b1" data-in="0" data-out=".11">
+      <h1>Kadr 50 f/1.2</h1>
+      <p class="lead">A manual-focus 50 mm lens with eleven rounded blades, for the light just before it runs out.</p>
+      <div class="row"><a class="btn" href="#reserve">Reserve a lens</a><a class="plain" href="#lab">Try the aperture</a></div>
+    </div>
+    <div class="beat r" data-in=".15" data-out=".30">
+      <h2>Focused by hand, to the millimetre.</h2>
+      <p>A 270° focus throw from 0.45 m to infinity. The distance and depth-of-field scales are engraved and filled, so they outlast the paint.</p>
+    </div>
+    <div class="beat l" data-in=".36" data-out=".57">
+      <h2>Ten elements in seven groups.</h2>
+      <p>Two aspherical surfaces and a floating rear group keep a portrait at full aperture sharp, even at 45 cm.</p>
+    </div>
+    <div class="beat l" data-in=".62" data-out=".78">
+      <div class="big"><span id="fnum">f/1.2</span></div>
+      <p class="unit">Eleven curved blades. The opening stays round down to f/2.8, then closes to a fine polygon at f/16. Keep scrolling to stop down.</p>
+    </div>
+    <div class="beat r" data-in=".82" data-out=".92">
+      <div class="big">640<small>g</small></div>
+      <p class="unit">Brass helicoid, aluminium barrel, 72 mm from mount to filter thread.</p>
+    </div>
+    <div class="beat r" data-in=".95" data-out="1.5">
+      <h2>Made in batches of 500.</h2>
+      <p>Batch 01 is assembled and tested by hand, one lens at a time. Each one ships with its own MTF chart.</p>
+      <div class="row" style="margin-top:32px"><a class="btn" href="#reserve">Reserve a lens</a></div>
+    </div>
+    <div class="progress" aria-hidden="true"><span>Kadr 50 · <output id="pstate">assembled</output></span><span><output id="pf">f/1.2</output> · <output id="pd">∞</output></span></div>
+  </div>
+</section>
+
+<section class="block" id="lab" aria-labelledby="lab-h">
+  <div class="wrap">
+    <div class="intro">
+      <div><p class="kicker">Try the aperture</p><h2 id="lab-h">See what f/1.2 does at night.</h2></div>
+      <p>Two rows of street lamps stand from 1 to 32 metres away. Pick an aperture and a focus distance: each lamp is drawn as the disc it would make on a full-frame sensor, to scale, shaped by eleven blades.</p>
+    </div>
+    <div class="labgrid">
+      <div class="view"><canvas id="bokeh" role="img" aria-label="Bokeh preview: street lamps rendered as out-of-focus discs"></canvas></div>
+      <div class="ctrls">
+        <div class="ctrl">
+          <label for="ap">Aperture <output id="apOut" for="ap">f/1.2</output></label>
+          <input id="ap" type="range" min="0" max="16" step="1" value="0">
+          <div class="ticks" aria-hidden="true"><span>1.2</span><span>2</span><span>2.8</span><span>4</span><span>5.6</span><span>8</span><span>16</span></div>
+        </div>
+        <div class="ctrl">
+          <label for="fd">Focus distance <output id="fdOut" for="fd">2 m</output></label>
+          <input id="fd" type="range" min="0" max="1000" step="1" value="380">
+          <div class="ticks" aria-hidden="true"><span>0.45 m</span><span>1</span><span>3</span><span>10</span><span>∞</span></div>
+        </div>
+        <dl class="dof">
+          <div><dt>Sharp from</dt><dd id="near">–</dd></div>
+          <div><dt>Sharp to</dt><dd id="far">–</dd></div>
+          <div><dt>Depth of field</dt><dd id="depth">–</dd></div>
+          <div><dt>Hyperfocal distance</dt><dd id="hyper">–</dd></div>
+        </dl>
+      </div>
+    </div>
+    <p class="note">Calculated for a 50 mm focal length on a 36 × 24 mm sensor with a 0.03 mm circle of confusion, using the thin-lens formulas. The preview is a 12 mm wide centre crop of the sensor, so disc sizes are to scale with that crop.</p>
+  </div>
+</section>
+
+<section class="block" id="specs" aria-labelledby="specs-h">
+  <div class="wrap specs">
+    <div>
+      <p class="kicker">Specifications</p>
+      <h2 id="specs-h">Every number on the barrel.</h2>
+      <svg class="diagram" id="diagram" viewBox="0 0 520 260" role="img" aria-label="Optical layout: ten elements in seven groups, aperture between the third and fourth group"></svg>
+    </div>
+    <table>
+      <tbody>
+        <tr><th scope="row">Focal length</th><td>50 mm</td></tr>
+        <tr><th scope="row">Aperture range</th><td>f/1.2 to f/16, half-stop clicks, switchable to clickless</td></tr>
+        <tr><th scope="row">Diaphragm</th><td>11 curved blades</td></tr>
+        <tr><th scope="row">Optical construction</th><td>10 elements in 7 groups, 2 aspherical surfaces, floating rear group</td></tr>
+        <tr><th scope="row">Closest focus</th><td>0.45 m, 0.13× magnification</td></tr>
+        <tr><th scope="row">Focus throw</th><td>270°</td></tr>
+        <tr><th scope="row">Angle of view</th><td>46.8° diagonal on 36 × 24 mm</td></tr>
+        <tr><th scope="row">Filter thread</th><td>58 mm</td></tr>
+        <tr><th scope="row">Size and weight</th><td>Ø 70 × 72 mm, 640 g</td></tr>
+        <tr><th scope="row">Mounts</th><td>Two mirrorless bayonets, 5 mm of flange back left for adapters</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="block" id="reserve" aria-labelledby="res-h">
+  <div class="wrap">
+    <p class="kicker">Batch 01, 500 lenses</p>
+    <h2 id="res-h">Reserve a Kadr 50.</h2>
+    <form id="form" novalidate>
+      <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" autocomplete="email" required placeholder="you@studio.com"></div>
+      <div class="field"><label for="mount">Mount</label><select id="mount" name="mount"><option>Mirrorless bayonet A</option><option>Mirrorless bayonet B</option></select></div>
+      <button class="btn" type="submit" id="send">Reserve</button>
+      <p class="msg" id="msg" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap">
+  <p class="name" aria-hidden="true">Kadr</p>
+  <p>Kadr is a fictional optics brand made for a design and engineering demo. The lens, its specifications and batch are invented; the depth-of-field maths is real. The 3D lens is modelled entirely in code with Three.js: no photos, no 3D files. Reservation is a demo and sends nothing.</p>
+</div></footer>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
+<script>
+/* ---------- shared optics maths (used by the 3D stage and the lab) ---------- */
+window.KADR = (function(){
+  const STOPS = [1.2,1.4,1.6,1.8,2,2.2,2.5,2.8,3.2,3.5,4,4.5,5.6,6.3,8,11,16];
+  const F = 50, C = 0.03; // mm
+  function hyper(N){ return F*F/(N*C) + F; }
+  function dof(N, s){ // s in mm
+    const H = hyper(N), near = s*(H-F)/(H+s-2*F), far = s < H ? s*(H-F)/(H-s) : Infinity;
+    return { H, near, far };
+  }
+  function coc(N, s, d){ // blur disc on sensor, mm, for a point at d when focused at s (Infinity allowed)
+    if (!isFinite(d) && !isFinite(s)) return 0;
+    if (!isFinite(s)) return F*F/(N*(d-F));
+    if (!isFinite(d)) return F*F/(N*(s-F));
+    return (F*F/N)*Math.abs(d-s)/(d*(s-F));
+  }
+  function fmtM(mm){ if (!isFinite(mm)) return '∞'; const m = mm/1000; return (m < 1 ? m.toFixed(2) : m < 10 ? m.toFixed(1) : Math.round(m)) + ' m'; }
+  return { STOPS, F, C, hyper, dof, coc, fmtM };
+})();
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const canvas = document.getElementById('gl');
+const story = document.getElementById('story');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.setClearColor(0x000000, 0);
+
+const scene = new THREE.Scene();
+const pmrem = new THREE.PMREMGenerator(renderer);
+scene.environment = pmrem.fromScene(new RoomEnvironment(), .04).texture;
+scene.environmentIntensity = .9;
+const camera = new THREE.PerspectiveCamera(28, 1, .1, 200);
+
+const key = new THREE.DirectionalLight(0xfff1de, 2.2); key.position.set(6, 10, 12); scene.add(key);
+const rim = new THREE.DirectionalLight(0xcfe0ff, 2.6); rim.position.set(-10, -4, -10); scene.add(rim);
+const fill = new THREE.DirectionalLight(0xffffff, .5); fill.position.set(-8, 3, 6); scene.add(fill);
+
+/* ---------- materials ---------- */
+const M = {
+  body: new THREE.MeshStandardMaterial({ color: 0x141518, metalness: .55, roughness: .42 }),
+  satin: new THREE.MeshStandardMaterial({ color: 0x1b1c20, metalness: .7, roughness: .3 }),
+  knurl: new THREE.MeshStandardMaterial({ color: 0x101114, metalness: .65, roughness: .5 }),
+  chrome: new THREE.MeshStandardMaterial({ color: 0xc9cbcf, metalness: 1, roughness: .2 }),
+  brass: new THREE.MeshStandardMaterial({ color: 0xb58e4a, metalness: 1, roughness: .34 }),
+  blade: new THREE.MeshStandardMaterial({ color: 0x0e0e10, metalness: .25, roughness: .72, side: THREE.DoubleSide }),
+  inner: new THREE.MeshStandardMaterial({ color: 0x050506, metalness: .2, roughness: .9, side: THREE.BackSide }),
+  // coated optical glass without a transmission pass: thin tinted body + strong coated reflections
+  glass: new THREE.MeshPhysicalMaterial({ color: 0x8ea2b6, metalness: 0, roughness: .02, transparent: true, opacity: .13, depthWrite: false,
+    iridescence: 1, iridescenceIOR: 1.35, iridescenceThicknessRange: [240, 560], clearcoat: 1, clearcoatRoughness: .02,
+    envMapIntensity: 1.1, side: THREE.FrontSide }),
+  red: new THREE.MeshStandardMaterial({ color: 0xc4302b, metalness: .2, roughness: .4 }),
+};
+
+/* ---------- geometry helpers (lens axis = +Z, rear at z=0, front at z=7.2; 1 unit = 10 mm) ---------- */
+const lens = new THREE.Group(); scene.add(lens);
+const pivot = new THREE.Group(); lens.add(pivot); // everything is centred on the lens middle
+pivot.position.z = -3.6;
+const layers = [];
+function layer(name, ex){ const g = new THREE.Group(); pivot.add(g); layers.push({ g, ex, name }); return g; }
+
+// a ring: lathe of a closed profile [ [r,z], ... ] around Z
+function ringLathe(profile, seg = 160){
+  const pts = profile.map(([r, z]) => new THREE.Vector2(r, z));
+  const g = new THREE.LatheGeometry(pts, seg);
+  g.rotateX(Math.PI / 2); // lathe axis Y -> Z (y becomes +z)
+  g.computeVertexNormals();
+  return g;
+}
+function tube(r0, r1, z0, z1, bevel = .03){ // closed hollow cylinder with soft edges
+  return ringLathe([[r1, z0 + bevel], [r1 - bevel, z0], [r0, z0], [r0, z1], [r1 - bevel, z1], [r1, z1 - bevel], [r1, z0 + bevel]]);
+}
+// knurled band: radial ridges on a cylinder
+function knurl(r, depth, z0, z1, ridges, seg = 960){
+  const g = new THREE.CylinderGeometry(r, r, z1 - z0, seg, 8, true);
+  const p = g.attributes.position, v = new THREE.Vector3();
+  for (let i = 0; i < p.count; i++){
+    v.fromBufferAttribute(p, i);
+    const a = Math.atan2(v.z, v.x), wave = Math.pow(.5 + .5 * Math.cos(a * ridges), 1.6);
+    const k = (r - depth * (1 - wave)) / r; p.setXYZ(i, v.x * k, v.y, v.z * k);
+  }
+  g.rotateX(Math.PI / 2); g.translate(0, 0, (z0 + z1) / 2); g.computeVertexNormals();
+  return g;
+}
+// lens element: front/back surfaces as sags, solid of revolution
+function element(a, tc, te, k1, k2, z){ // a clear radius, tc centre thickness, te edge thickness, k1/k2 shape of the two faces (+ convex)
+  const pts = [], n = 28;
+  for (let i = 0; i <= n; i++){ const r = a * i / n, u = 1 - (r / a) ** 2; pts.push([r, te / 2 + (tc - te) / 2 * u * k1]); }
+  for (let i = n; i >= 0; i--){ const r = a * i / n, u = 1 - (r / a) ** 2; pts.push([r, -te / 2 - (tc - te) / 2 * u * k2]); }
+  const g = new THREE.LatheGeometry(pts.map(([r, y]) => new THREE.Vector2(Math.max(r, 1e-4), y)), 96);
+  g.rotateX(Math.PI / 2); g.translate(0, 0, z); g.computeVertexNormals();
+  return new THREE.Mesh(g, M.glass);
+}
+// engraved band: open cylinder with a canvas texture (u around, v along the axis)
+function band(r, z0, z1, draw, opts = {}){
+  const W = 4096, H = Math.round(W * (z1 - z0) / (2 * Math.PI * r));
+  const c = document.createElement('canvas'); c.width = W; c.height = Math.max(32, H);
+  const x = c.getContext('2d'); draw(x, c.width, c.height);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  const g = new THREE.CylinderGeometry(r, r, z1 - z0, 256, 1, true, opts.start ?? 0, Math.PI * 2);
+  g.rotateX(Math.PI / 2); g.translate(0, 0, (z0 + z1) / 2);
+  return new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map: t, transparent: true, metalness: .1, roughness: .55, depthWrite: false }));
+}
+const FONT = '600 {s}px Archivo, "Helvetica Neue", Arial, sans-serif';
+function txt(x, s, str, cx, cy, color){ x.font = FONT.replace('{s}', s); x.fillStyle = color; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.save(); x.translate(cx, cy); x.rotate(-Math.PI / 2); x.fillText(str, 0, 0); x.restore(); }
+
+/* ---------- build the lens ---------- */
+// L0 mount (rear)
+const Lmount = layer('mount', -6.6);
+Lmount.add(new THREE.Mesh(tube(2.25, 2.62, 0, .32, .02), M.chrome));
+Lmount.add(new THREE.Mesh(tube(2.3, 3.02, .3, .62, .02), M.satin));
+for (let i = 0; i < 3; i++){ // bayonet tabs
+  const s = new THREE.Shape(); const a0 = i * 2 * Math.PI / 3 + .2, a1 = a0 + .62;
+  s.absarc(0, 0, 2.86, a0, a1, false); s.absarc(0, 0, 2.5, a1, a0, true);
+  const g = new THREE.ExtrudeGeometry(s, { depth: .1, bevelEnabled: true, bevelThickness: .01, bevelSize: .01, bevelSegments: 1, curveSegments: 24 });
+  Lmount.add(new THREE.Mesh(g, M.chrome));
+}
+// L1 aperture ring with ribs and f-numbers
+const Lap = layer('aperture-ring', -4.8);
+Lap.add(new THREE.Mesh(tube(2.9, 3.2, .62, 1.62, .03), M.body));
+Lap.add(new THREE.Mesh(knurl(3.27, .07, .66, 1.08, 36, 288), M.knurl));
+const apStops = ['16', '11', '8', '5.6', '4', '2.8', '2', '1.4', '1.2'];
+const apBand = band(3.205, 1.12, 1.58, (x, w, h) => {
+  apStops.forEach((s, i) => { const u = (.06 + i * .043) * w; txt(x, h * .5, s, u, h / 2, s === '1.2' ? '#d6ad1f' : '#ecebe6');
+    x.fillStyle = '#ecebe6'; x.fillRect(u - 2, 2, 4, h * .14); });
+});
+Lap.add(apBand);
+// L2 rear glass group (3 elements)
+const Lrear = layer('rear-group', -3.3);
+Lrear.add(element(1.55, .52, .2, 1, .5, 1.05), element(1.7, .3, .42, -.6, 1, 1.62), element(1.75, .55, .18, 1, .9, 2.12));
+// L3 aperture unit: 11 curved blades + housing
+const Lir = layer('aperture', -1.7);
+const IRIS_Z = 2.78;
+Lir.add(new THREE.Mesh(tube(2.62, 2.96, IRIS_Z - .09, IRIS_Z + .09, .01), M.satin));
+const blades = [];
+{
+  const a = 2.1, b = 2.9, PHI = 110 * Math.PI / 180, P = new THREE.Vector2((a + b) / 2, 0);
+  const s = new THREE.Shape(); s.absarc(0, 0, b, 0, PHI, false); s.absarc(0, 0, a, PHI, 0, true);
+  const g = new THREE.ExtrudeGeometry(s, { depth: .012, bevelEnabled: false, curveSegments: 48 });
+  g.translate(-P.x, -P.y, 0); // pivot at origin
+  { const p = g.attributes.position; for (let i = 0; i < p.count; i++){ // shingle tilt: far end sits lower than the pivot end
+      const x = p.getX(i) + P.x, y = p.getY(i) + P.y; const ang = (Math.atan2(y, x) + Math.PI * 2) % (Math.PI * 2);
+      p.setZ(i, p.getZ(i) - .05 * Math.min(1, ang / PHI)); } g.computeVertexNormals(); }
+  for (let i = 0; i < 11; i++){
+    const holder = new THREE.Group(); const th = i * 2 * Math.PI / 11;
+    holder.rotation.z = th; holder.position.z = IRIS_Z + .025;
+    const m = new THREE.Mesh(g, M.blade); m.position.set(P.x, P.y, 0);
+    holder.add(m); Lir.add(holder); blades.push(m);
+  }
+  // r(beta) table so that the opening radius follows the f-number exactly
+  const base = []; for (let i = 0; i <= 60; i++){ const t = PHI * i / 60; base.push([a * Math.cos(t), a * Math.sin(t)], [b * Math.cos(t), b * Math.sin(t)]); }
+  for (let i = 0; i <= 10; i++){ const r = a + (b - a) * i / 10; base.push([r, 0], [r * Math.cos(PHI), r * Math.sin(PHI)]); }
+  const T = []; for (let k = 0; k <= 160; k++){ const be = .8 * k / 160, c = Math.cos(be), sn = Math.sin(be); let m = 1e9;
+    for (const [x, y] of base){ const dx = x - P.x, dy = y - P.y; m = Math.min(m, Math.hypot(P.x + c * dx - sn * dy, P.y + sn * dx + c * dy)); } T.push([be, m]); }
+  window.__betaFor = r => { for (let k = 1; k < T.length; k++) if (T[k][1] <= r){ const [b0, r0] = T[k - 1], [b1, r1] = T[k]; return b0 + (b1 - b0) * (r0 - r) / (r0 - r1); } return .8; };
+}
+// L4 middle barrel: index ring, focus ring with distance scale and knurl (focus ring rotates)
+const Lmid = layer('focus', 0);
+Lmid.add(new THREE.Mesh(tube(2.95, 3.18, 1.62, 2.02, .02), M.body));
+const red = new THREE.Mesh(new THREE.CylinderGeometry(.06, .06, .04, 24), M.red); red.position.set(0, 3.18, 1.84); Lmid.add(red);
+const idx = band(3.185, 1.66, 1.98, (x, w, h) => { // depth-of-field scale around the index (top = u .75 on this cylinder)
+  const c = .25 * w; x.fillStyle = '#ecebe6'; const marks = [['16', .062], ['8', .04], ['4', .022]];
+  for (const [s, d] of marks){ for (const sg of [-1, 1]){ const u = c + sg * d * w; x.fillRect(u - 2, 0, 4, h * .3); txt(x, h * .42, s, u, h * .62, '#ecebe6'); } }
+}, { start: 0 });
+Lmid.add(idx);
+const focusRing = new THREE.Group(); Lmid.add(focusRing);
+focusRing.add(new THREE.Mesh(tube(3.0, 3.36, 2.02, 5.02, .04), M.body));
+focusRing.add(new THREE.Mesh(knurl(3.46, .08, 2.7, 4.92, 120), M.knurl));
+const distances = ['0.45', '0.5', '0.6', '0.7', '0.8', '1', '1.2', '1.5', '2', '3', '5', '∞'];
+const feet = ['1.5', '2', '2.5', '3', '4', '5', '7', '10', '15', '∞'];
+focusRing.add(band(3.365, 2.08, 2.62, (x, w, h) => {
+  distances.forEach((s, i) => { const u = (.25 + (i / (distances.length - 1)) * .75 - .375) * w + w * .0; txt(x, h * .36, s, ((u % w) + w) % w, h * .33, '#ecebe6'); });
+  feet.forEach((s, i) => { const u = (.25 + (i / (feet.length - 1)) * .72 - .36) * w; txt(x, h * .26, s, ((u % w) + w) % w, h * .76, '#d6ad1f'); });
+}));
+// L5 floating doublet
+const Lfloat = layer('floating', 2.1);
+Lfloat.add(element(2.05, .62, .2, 1, .4, 3.55), element(2.1, .26, .5, -.5, -.3, 4.05));
+// L6 front barrel shell with filter thread and engraved front ring
+const Lfront = layer('front', 3.8);
+Lfront.add(new THREE.Mesh(ringLathe([[3.26, 5.02], [3.32, 5.6], [3.38, 6.95], [3.42, 7.0], [3.42, 7.2], [3.38, 7.24], [2.86, 7.24], [2.86, 7.1], [2.95, 5.02], [3.26, 5.02]]), M.body));
+Lfront.add(new THREE.Mesh(ringLathe([[2.88, 5.1], [2.88, 7.12]], 96), M.inner));
+{ // engraved front ring (annulus facing forward)
+  const S = 2048, c = document.createElement('canvas'); c.width = c.height = S; const x = c.getContext('2d');
+  x.translate(S / 2, S / 2); x.fillStyle = '#ecebe6'; x.font = FONT.replace('{s}', 58); x.textAlign = 'center'; x.textBaseline = 'middle';
+  const R = S / 2 * (3.15 / 3.42), str = 'KADR  50 mm  1:1.2   No. 0137   ASPH   ⌀58';
+  let ang = -Math.PI * .92; for (const ch of str){ const w = x.measureText(ch).width; ang += w / 2 / R; x.save(); x.rotate(ang); x.translate(0, -R); x.fillText(ch, 0, 0); x.restore(); ang += w / 2 / R + .004; }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
+  const g = new THREE.RingGeometry(2.9, 3.4, 128, 1); // planar UVs map the canvas square onto the disc
+  const uv = g.attributes.uv, p = g.attributes.position; for (let i = 0; i < p.count; i++) uv.setXY(i, .5 + p.getX(i) / (2 * 3.42), .5 + p.getY(i) / (2 * 3.42));
+  const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map: t, transparent: true, metalness: .1, roughness: .5, depthWrite: false }));
+  m.position.z = 7.245; Lfront.add(m);
+}
+// L7 front glass group
+const Lglass = layer('front-group', 6.2);
+Lglass.add(element(2.84, .72, .2, 1, .25, 6.78), element(2.5, .36, .62, -.4, .8, 6.12), element(2.3, .62, .24, 1, .8, 5.5));
+
+/* ---------- labels for the exploded view ---------- */
+const LABELS = [
+  { L: Lglass, at: [0, 2.84, 6.2], t: 'Front element', d: 'aspherical', up: true, h: 40 },
+  { L: Lfloat, at: [0, -2.1, 3.8], t: 'Floating doublet', d: 'moves at close focus', up: false, h: 112 },
+  { L: Lmid, at: [0, 3.46, 3.6], t: 'Focus ring', d: 'brass helicoid', up: true, h: 56 },
+  { L: Lir, at: [0, -2.96, IRIS_Z], t: 'Diaphragm', d: '11 blades', up: false, h: 48 },
+  { L: Lrear, at: [0, 1.6, 1.1], t: 'Rear group', d: '3 elements', up: true, h: 56 },
+  { L: Lmount, at: [0, -3.02, .3], t: 'Bayonet', d: 'stainless steel', up: false, h: 40 },
+];
+const labRoot = document.getElementById('labels');
+LABELS.forEach(l => { const e = document.createElement('div'); e.className = 'lab ' + (l.up ? 'up' : 'down'); e.innerHTML = `<span><b>${l.t}</b>${l.d}</span>`; e.style.setProperty('--h', l.h + 'px'); labRoot.appendChild(e); l.el = e; l.v = new THREE.Vector3(...l.at); });
+
+/* ---------- scroll keyframes ---------- */
+// p: progress; rx/ry: rotation; x/y: offset in units; e: explode 0..1; d: camera distance; n: aperture 0 (f/1.2) .. 1 (f/16); f: focus ring 0 (∞) .. 1 (0.45 m)
+const K = [
+  { p: 0,   rx: .18, ry: -.78, x: 2.6,  y: 0,   e: 0, d: 30, n: 0, f: 0 },
+  { p: .11, rx: .2,  ry: -.62, x: 2.6,  y: 0,   e: 0, d: 29, n: 0, f: 0 },
+  { p: .16, rx: .06, ry: -1.5, x: -3.6, y: 0,   e: 0, d: 28, n: 0, f: 0 },
+  { p: .30, rx: .06, ry: -1.6, x: -3.6, y: 0,   e: 0, d: 28, n: 0, f: 1 },
+  { p: .36, rx: .22, ry: -1.32, x: 5.9, y: -.6, e: 1, d: 44.5, n: .25, f: .6 },
+  { p: .57, rx: .2,  ry: -1.42, x: 5.9, y: -.6, e: 1, d: 43.5, n: .25, f: .6 },
+  { p: .62, rx: .02, ry: -.04, x: 3.2,  y: 0,   e: 0, d: 23.5, n: 0, f: 0 },
+  { p: .65, rx: .02, ry: -.03, x: 3.2,  y: 0,   e: 0, d: 23.5, n: 0, f: 0 },
+  { p: .76, rx: .02, ry: .02,  x: 3.2,  y: 0,   e: 0, d: 22.5, n: 1, f: 0 },
+  { p: .80, rx: -.2, ry: 2.5,  x: -3.4, y: 0,   e: 0, d: 28, n: .7, f: 0 },
+  { p: .92, rx: -.22, ry: 2.3, x: -3.4, y: 0,   e: 0, d: 28, n: .55, f: 0 },
+  { p: .95, rx: .22, ry: -.95, x: -3.2, y: 0,   e: 0, d: 30, n: .2, f: .3 },
+  { p: 1,   rx: .24, ry: -.88, x: -3.2, y: 0,   e: 0, d: 30, n: .2, f: .3 },
+];
+const ss = t => t * t * (3 - 2 * t);
+function sample(p){
+  let i = 0; while (i < K.length - 2 && p > K[i + 1].p) i++;
+  const A = K[i], B = K[i + 1], t = ss(Math.min(1, Math.max(0, (p - A.p) / (B.p - A.p || 1)))), o = {};
+  for (const k of ['rx', 'ry', 'x', 'y', 'e', 'd', 'n', 'f']) o[k] = A[k] + (B[k] - A[k]) * t;
+  return o;
+}
+
+/* ---------- beats ---------- */
+const beats = [...document.querySelectorAll('.beat')];
+function beatsAt(p){
+  for (const b of beats){
+    const a = +b.dataset.in, z = +b.dataset.out, f = .03;
+    const o = p < a - f || p > z + f ? 0 : p < a ? (p - a + f) / f : p > z ? (z + f - p) / f : 1;
+    b.style.opacity = o.toFixed(3); b.style.visibility = o < .01 ? 'hidden' : 'visible';
+    const mob = innerWidth <= 760 || innerWidth / innerHeight < .85;
+    b.style.transform = (mob ? '' : 'translateY(-50%) ') + `translateY(${((1 - o) * (p < a ? 20 : -20)).toFixed(1)}px)`;
+  }
+}
+
+/* ---------- loop ---------- */
+const fnumEl = document.getElementById('fnum'), pf = document.getElementById('pf'), pd = document.getElementById('pd'), pst = document.getElementById('pstate');
+let target = 0, prog = 0, last = performance.now(), visible = true, W = 0, H = 0;
+function progress(){ const r = story.getBoundingClientRect(), range = r.height - innerHeight; return range > 0 ? Math.min(1, Math.max(0, -r.top / range)) : 0; }
+function resize(){
+  const w = canvas.clientWidth, h = canvas.clientHeight; if (w === W && h === H) return; W = w; H = h;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+new IntersectionObserver(e => { visible = e[0].isIntersecting; }, { rootMargin: '200px 0px' }).observe(story);
+const v3 = new THREE.Vector3();
+const STILL = /[?&]still/.test(location.search);
+function frame(now){
+  if (!STILL) requestAnimationFrame(frame);
+  const dt = Math.min(.1, (now - last) / 1000); last = now;
+  if (!visible) return;
+  resize();
+  target = progress();
+  prog = RM || STILL ? target : prog + (target - prog) * (1 - Math.exp(-dt * 7));
+  if (Math.abs(target - prog) < 1e-4) prog = target;
+  beatsAt(target);
+  const s = sample(prog), aspect = W / H, mobile = aspect < .85;
+  const idle = RM ? 0 : Math.sin(now / 2600) * .025;
+  lens.rotation.set(s.rx + idle * .4, s.ry + idle, 0);
+  lens.position.set(mobile ? 0 : s.x, mobile ? 3.4 + s.y : s.y, 0);
+  const dist = s.d * (mobile ? Math.max(1, 1.2 / aspect) : 1);
+  camera.position.set(0, 0, dist); camera.lookAt(0, mobile ? 1.4 : 0, 0);
+  for (const L of layers) L.g.position.z = L.ex * s.e * 1.0;
+  // aperture: 0 -> f/1.2, 1 -> f/16 on a log scale
+  const N = 1.2 * Math.pow(16 / 1.2, s.n), r = Math.min(2.083, 2.5 / N), beta = window.__betaFor(r);
+  for (const b of blades) b.rotation.z = beta;
+  apBand.rotation.z = -s.n * 2.2; // f-number ring turns with the stop
+  focusRing.rotation.z = s.f * 4.712; // 270° throw
+  const fTxt = 'f/' + (N < 10 ? N.toFixed(1) : Math.round(N)); fnumEl.textContent = fTxt; pf.textContent = fTxt;
+  pd.textContent = s.f < .02 ? '∞' : KADR.fmtM(450 / Math.max(.01, s.f));
+  pst.textContent = s.e > .5 ? 'exploded view, 10 elements' : 'assembled';
+  renderer.render(scene, camera);
+  // labels
+  const show = s.e > .78 && target > .36 && target < .58 && !mobile;
+  lens.updateMatrixWorld(true);
+  for (const l of LABELS){
+    if (!show){ l.el.style.opacity = 0; continue; }
+    v3.copy(l.v).applyMatrix4(l.L.matrixWorld).project(camera);
+    const x = (v3.x * .5 + .5) * W, y = (-v3.y * .5 + .5) * H;
+    l.el.style.transform = `translate(${x.toFixed(0)}px,${y.toFixed(0)}px)` + (l.up ? ' translateY(-100%)' : '');
+    l.el.style.opacity = 1;
+  }
+}
+if (STILL){ renderer.domElement.style.background = 'transparent'; window.__still = () => { W = 0; prog = progress(); frame(performance.now()); }; }
+else requestAnimationFrame(frame);
+window.__kadr = { sample, K, renderer };
+</script>
+
+<script>
+/* ---------- the lab: bokeh preview + depth of field ---------- */
+(function(){
+  const { STOPS, coc, dof, fmtM, hyper } = window.KADR;
+  const ap = document.getElementById('ap'), fd = document.getElementById('fd'), cv = document.getElementById('bokeh'), ctx = cv.getContext('2d');
+  const out = { ap: document.getElementById('apOut'), fd: document.getElementById('fdOut'), near: document.getElementById('near'), far: document.getElementById('far'), depth: document.getElementById('depth'), hyper: document.getElementById('hyper') };
+  const LAMPS = [1, 2, 4, 8, 16, 32].map(m => m * 1000);
+  const COL = ['#ffd39a', '#ffc685', '#ffe6bd', '#ffb870', '#fff0d6', '#ffcf94'];
+  function focusMM(){ const t = fd.value / 1000; if (t > .995) return Infinity; return 450 * Math.pow(30000 / 450, t / .995); }
+  function iris(N){ // aperture outline points (unit radius): round to f/2.8, then 11 curved sides
+    const pts = [], n = 11, round = Math.max(0, Math.min(1, (Math.log2(N) - Math.log2(2.8)) / (Math.log2(16) - Math.log2(2.8))));
+    for (let i = 0; i < 132; i++){
+      const a = i / 132 * Math.PI * 2, seg = Math.PI * 2 / n, local = ((a % seg) + seg) % seg - seg / 2;
+      const poly = Math.cos(Math.PI / n) / Math.cos(local), r = 1 + (poly - 1) * round * .9;
+      pts.push([Math.cos(a - Math.PI / 2) * r, Math.sin(a - Math.PI / 2) * r]);
+    }
+    return pts;
+  }
+  function draw(){
+    const dpr = Math.min(devicePixelRatio || 1, 2), w = cv.clientWidth, h = cv.clientHeight;
+    if (cv.width !== Math.round(w * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+    const N = STOPS[+ap.value], s = focusMM(), W = cv.width, H = cv.height, pxPerMM = W / 12;
+    ctx.fillStyle = '#06070a'; ctx.fillRect(0, 0, W, H);
+    // two rows of lamps receding to a vanishing point; position by 1/distance, blur by the real circle of confusion
+    const vx = W * .56, vy = H * .54, shape = iris(N);
+    const place = (d, side) => { const k = Math.pow(Math.min(1, 1000 / d), .6); return [vx + side * k * W * .44, vy - k * H * .3]; };
+    ctx.strokeStyle = 'rgba(233,231,223,.10)'; ctx.lineWidth = dpr;
+    for (const side of [-1, 1]){ ctx.beginPath(); ctx.moveTo(vx, vy + H * .06); ctx.lineTo(vx + side * W * .9, H); ctx.stroke(); }
+    ctx.globalCompositeOperation = 'lighter';
+    const order = LAMPS.slice().reverse();
+    for (const d of order) for (const side of [-1, 1]){
+      const i = LAMPS.indexOf(d), [x, y] = place(d, side);
+      const r = Math.max(1.5 * dpr, coc(N, s, d) * pxPerMM / 2), core = Math.min(1, (10 * dpr * dpr) / (r * r));
+      ctx.save(); ctx.translate(x, y);
+      ctx.beginPath(); shape.forEach(([px, py], k) => k ? ctx.lineTo(px * r, py * r) : ctx.moveTo(px * r, py * r)); ctx.closePath();
+      ctx.fillStyle = COL[i]; ctx.globalAlpha = Math.min(1, .3 + core); ctx.fill();
+      if (r > 6 * dpr){ ctx.globalAlpha = Math.min(.9, .25 + core * 2); ctx.lineWidth = Math.max(1, r * .05); ctx.strokeStyle = COL[i]; ctx.stroke(); }
+      ctx.restore(); ctx.globalAlpha = 1;
+    }
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.font = `${13 * dpr}px Archivo, Arial, sans-serif`; ctx.fillStyle = 'rgba(233,231,223,.8)'; ctx.textAlign = 'center';
+    LAMPS.forEach((d, i) => { const [x, y] = place(d, i % 2 ? 1 : -1), c = coc(N, s, d), r = c * pxPerMM / 2;
+      ctx.fillText(`${d / 1000} m${c <= .03 ? ' · sharp' : ''}`, Math.max(40 * dpr, Math.min(W - 40 * dpr, x)), Math.min(H - 10 * dpr, y + Math.max(22 * dpr, r + 18 * dpr))); });
+    // readouts
+    out.ap.textContent = 'f/' + N; out.fd.textContent = fmtM(s);
+    const D = isFinite(s) ? dof(N, s) : { near: hyper(N) - 50, far: Infinity, H: hyper(N) };
+    out.near.textContent = fmtM(D.near); out.far.textContent = fmtM(D.far);
+    out.depth.textContent = isFinite(D.far) ? (D.far - D.near < 1000 ? Math.round((D.far - D.near) / 10) + ' cm' : fmtM(D.far - D.near)) : '∞';
+    out.hyper.textContent = fmtM(D.H);
+    ap.setAttribute('aria-valuetext', 'f/' + N); fd.setAttribute('aria-valuetext', fmtM(s));
+  }
+  ap.addEventListener('input', draw); fd.addEventListener('input', draw);
+  new ResizeObserver(draw).observe(cv);
+  document.fonts && document.fonts.ready.then(draw);
+  draw();
+
+  /* optical diagram for the specs (drawn from the same element list) */
+  const svg = document.getElementById('diagram'), NS = 'http://www.w3.org/2000/svg';
+  const els = [[60, 70, 1], [92, 58, -1], [118, 60, 1], [186, 52, 1], [214, 50, -1], [262, 40, 1], [292, 38, -1], [338, 42, 1], [370, 36, 1], [404, 30, -1]];
+  const ln = (x1, y1, x2, y2, w, o) => { const e = document.createElementNS(NS, 'line'); Object.entries({ x1, y1, x2, y2, stroke: 'currentColor', 'stroke-width': w, opacity: o }).forEach(([k, v]) => e.setAttribute(k, v)); svg.appendChild(e); };
+  ln(20, 130, 500, 130, 1, .3);
+  els.forEach(([x, h, k]) => { const p = document.createElementNS(NS, 'path'); const b = 9 * k;
+    p.setAttribute('d', `M${x} ${130 - h} Q${x - 10 - b} 130 ${x} ${130 + h} L${x + 12} ${130 + h} Q${x + 22 - b * .6} 130 ${x + 12} ${130 - h} Z`);
+    p.setAttribute('fill', '#141518'); p.setAttribute('fill-opacity', '.14'); p.setAttribute('stroke', '#141518'); p.setAttribute('stroke-width', '1.2'); svg.appendChild(p); });
+  ln(155, 70, 155, 104, 2.5, 1); ln(155, 156, 155, 190, 2.5, 1);
+  const t = document.createElementNS(NS, 'text'); t.setAttribute('x', 155); t.setAttribute('y', 236); t.setAttribute('text-anchor', 'middle'); t.setAttribute('font-size', 13); t.setAttribute('fill', '#4a4c52'); t.textContent = 'diaphragm'; svg.appendChild(t);
+  const t2 = document.createElementNS(NS, 'text'); t2.setAttribute('x', 470); t2.setAttribute('y', 236); t2.setAttribute('text-anchor', 'end'); t2.setAttribute('font-size', 13); t2.setAttribute('fill', '#4a4c52'); t2.textContent = 'sensor side'; svg.appendChild(t2);
+  const t3 = document.createElementNS(NS, 'text'); t3.setAttribute('x', 30); t3.setAttribute('y', 236); t3.setAttribute('font-size', 13); t3.setAttribute('fill', '#4a4c52'); t3.textContent = 'subject side'; svg.appendChild(t3);
+
+  /* reservation form (demo: nothing is sent) */
+  const form = document.getElementById('form'), email = document.getElementById('email'), msg = document.getElementById('msg'), send = document.getElementById('send');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim());
+    email.setAttribute('aria-invalid', ok ? 'false' : 'true');
+    msg.className = 'msg' + (ok ? '' : ' err');
+    if (!ok){ msg.textContent = 'That email address looks incomplete. Check the part after the @.'; email.focus(); return; }
+    send.disabled = true; send.textContent = 'Reserving…';
+    setTimeout(() => { send.disabled = false; send.textContent = 'Reserve'; msg.textContent = `Reserved in this demo for ${email.value.trim()}. Nothing was sent: Kadr is a fictional brand.`; }, 700);
+  });
+})();
+</script>
+
+</body></html>

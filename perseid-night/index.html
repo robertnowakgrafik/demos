@@ -1,0 +1,429 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Perseid Night 2027</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="One night under the Perseids: a field, a hundred meteors an hour at a dark site, and a calculator that tells you how many you will actually see.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,300..800&family=Instrument+Sans:wght@400..600&display=swap">
+<style>
+/* Layout: one night sky, five 2026 UI techniques, each doing a job: meteors drawn as WebGL light rays (hero), giant variable type that answers the cursor, real liquid-glass refraction over a star chart, progressive blur under the header, and a bento of the night's facts with a live meteor-rate calculator. */
+:root{
+  --sky:#060a1c;      /* dark-site night, not black */
+  --sky-2:#0d1430;    /* one step up */
+  --tile:#121a3a;
+  --star:#eef0ff;
+  --dim:#a6abc7;
+  --head:#ffcf6e;     /* meteor head, used for actions and data */
+  --display:"Anybody",ui-sans-serif,"Arial Narrow",Arial,sans-serif;
+  --text:"Instrument Sans",ui-sans-serif,"Helvetica Neue",Arial,sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{overflow-x:clip;background:var(--sky)}
+body{background:var(--sky);color:var(--star);font-family:var(--text);font-size:18px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1320px;margin-inline:auto;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);font-weight:700;font-stretch:100%;letter-spacing:-.02em;line-height:1;margin:0;text-wrap:balance}
+p{margin:0;text-wrap:pretty}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--head);outline-offset:3px}
+.skip{position:absolute;left:-9999px}.skip:focus{left:16px;top:16px;z-index:60;background:var(--star);color:var(--sky);padding:12px 16px}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 26px;border:0;border-radius:999px;background:var(--head);color:#1d1404;font:600 16px/1 var(--text);text-decoration:none;cursor:pointer;transition:transform .2s var(--ease)}
+.btn:active{transform:scale(.97)}
+
+/* header with progressive blur: seven backdrop layers, each twice as strong, masked in overlapping bands */
+.top{position:fixed;inset:0 0 auto;height:calc(112px + env(safe-area-inset-top,0px));z-index:30;pointer-events:none}
+.pb{position:absolute;inset:0}
+.pb i{position:absolute;inset:0}
+.pb i:nth-child(1){backdrop-filter:blur(.75px);-webkit-backdrop-filter:blur(.75px);mask:linear-gradient(#000 0,#000 30%,#0000 100%)}
+.pb i:nth-child(2){backdrop-filter:blur(1.5px);-webkit-backdrop-filter:blur(1.5px);mask:linear-gradient(#000 0,#000 34%,#0000 90%)}
+.pb i:nth-child(3){backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);mask:linear-gradient(#000 0,#000 36%,#0000 80%)}
+.pb i:nth-child(4){backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);mask:linear-gradient(#000 0,#000 34%,#0000 70%)}
+.pb i:nth-child(5){backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);mask:linear-gradient(#000 0,#000 30%,#0000 60%)}
+.pb i:nth-child(6){backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);mask:linear-gradient(#000 0,#000 22%,#0000 48%)}
+.pb i:nth-child(7){backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);mask:linear-gradient(#000 0,#0000 34%)}
+.pb b{position:absolute;inset:0;background:linear-gradient(#060a1cf0 0%,#060a1ce0 12%,#060a1cbf 25%,#060a1c94 38%,#060a1c63 52%,#060a1c33 68%,#060a1c12 84%,#060a1c00 100%)}
+.top .in{position:relative;display:flex;align-items:center;justify-content:space-between;gap:24px;height:72px;margin-top:env(safe-area-inset-top,0px);pointer-events:auto}
+.mark{font-family:var(--display);font-weight:800;font-stretch:130%;font-size:20px;letter-spacing:-.01em;text-decoration:none;white-space:nowrap}
+@media (max-width:480px){.mark{font-size:17px;font-stretch:110%}}
+.top nav{display:flex;gap:28px;font-size:16px}
+.top nav a{text-decoration:none;color:var(--dim)}.top nav a:hover{color:var(--star)}
+.top .btn{min-height:44px;padding:0 20px;font-size:15px}
+@media (max-width:820px){.top nav{display:none}}
+
+/* hero: meteors are light rays in a fragment shader */
+.hero{position:relative;min-height:100svh;display:grid;align-content:end;overflow:hidden}
+#sky{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero .copy{position:relative;z-index:1;padding-bottom:12px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:32px;align-items:end}
+.hero h1{font-size:clamp(34px,3.6vw,56px);font-stretch:85%;max-width:16ch}
+.hero .meta{font-size:18px;color:var(--star);max-width:38ch}
+.hero .meta p+p{margin-top:16px}
+.giant{position:relative;z-index:1;display:block;font-family:var(--display);font-weight:800;line-height:.78;letter-spacing:-.02em;white-space:nowrap;width:max-content;margin:16px 0 0 -.05em;padding-bottom:3vh;color:var(--star);user-select:none}
+.giant span{display:inline-block;font-variation-settings:"wdth" var(--w,100),"wght" var(--g,780)}
+.radiant-tag{position:absolute;z-index:1;font-size:13px;color:var(--dim);transform:translate(14px,-50%);pointer-events:none;white-space:nowrap}
+.radiant-tag::before{content:"";position:absolute;left:-14px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;box-shadow:0 0 0 1.5px var(--dim)}
+
+/* where to look: liquid glass over a star chart */
+.look{position:relative;height:min(860px,110svh);overflow:hidden;background:var(--sky)}
+#chart,#chartgl{position:absolute;inset:0;width:100%;height:100%;display:block}
+.glass.lens{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
+.glass{position:absolute;right:max(24px,6vw);top:50%;transform:translateY(-50%);width:min(440px,calc(100% - 48px));padding:36px;border-radius:40px;color:#fff;
+  background:#1a1c3c26;backdrop-filter:blur(14px) saturate(150%);-webkit-backdrop-filter:blur(14px) saturate(150%);
+  box-shadow:inset 0 1.5px 0 #ffffffe6,inset 1px 0 0 #ffffff59,inset -1px 0 0 #ffffff59,inset 0 -1px 0 #ffffff99,0 30px 80px #0008}
+.glass h2{font-size:clamp(34px,3.4vw,50px);font-stretch:90%}
+.glass p{margin-top:16px;font-size:18px}
+.glass .tip{font-size:15px;color:#dfe2f7;margin-top:20px}
+
+/* bento */
+.bento-wrap{padding-block:160px}
+.bento-wrap > .wrap > h2{font-size:clamp(44px,6vw,92px);font-stretch:80%;max-width:14ch;margin-bottom:56px}
+.bento{display:grid;gap:16px;grid-template-columns:repeat(6,minmax(0,1fr));grid-auto-rows:minmax(0,auto);
+  grid-template-areas:"rate rate rate rate tick tick" "rate rate rate rate tick tick" "fact fact time time time pack" "comet comet time time time pack"}
+.tile{background:var(--tile);border-radius:28px;padding:28px;min-width:0;min-height:0;position:relative;overflow:hidden}
+.tile h3{font-size:24px;font-stretch:90%;margin-bottom:12px}
+.t-rate{grid-area:rate;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 24px;align-content:start}
+.t-rate .num{font-family:var(--display);font-weight:800;font-stretch:60%;font-size:clamp(96px,11vw,176px);line-height:.8;color:var(--head);font-variant-numeric:tabular-nums;grid-row:1/3;grid-column:2;text-align:right}
+.t-rate .num small{display:block;font-family:var(--text);font-weight:500;font-size:15px;color:var(--dim);margin-top:12px;font-stretch:100%;line-height:1.3}
+.t-rate .intro{font-size:17px;color:var(--dim);max-width:40ch}
+.bars{grid-column:1/-1;display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:6px;align-items:end;height:200px;margin-top:24px}
+.bars button{all:unset;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;height:100%;position:relative}
+.bars button i{display:block;background:#3a4682;border-radius:6px 6px 2px 2px;height:var(--h);transition:background-color .2s var(--ease),height .45s var(--ease)}
+.bars button[aria-pressed=true] i{background:var(--head)}
+.bars button:hover i{background:#5a68ad}
+.bars button:focus-visible{outline:2px solid var(--head);outline-offset:2px;border-radius:6px}
+.bars-x{grid-column:1/-1;display:grid;grid-template-columns:repeat(14,minmax(0,1fr));gap:6px;font-size:12px;color:var(--dim);text-align:center;font-variant-numeric:tabular-nums}
+.sky-ctl{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.sky-ctl label{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;background:#ffffff10;cursor:pointer;font-size:15px}
+.sky-ctl input{accent-color:var(--head)}
+.sky-ctl label:has(input:checked){background:#ffcf6e26;box-shadow:inset 0 0 0 1.5px var(--head)}
+.t-rate .note{grid-column:1/-1;font-size:13px;color:var(--dim);margin-top:12px;max-width:80ch}
+.t-tick{grid-area:tick;background:#e9e6dc;color:#14182a;display:grid;grid-template-rows:auto 1fr auto;padding:0}
+.t-tick .half{padding:28px}
+.t-tick .half:first-child{mask:radial-gradient(14px at 0 100%,#0000 98%,#000) left/51% 100% no-repeat,radial-gradient(14px at 100% 100%,#0000 98%,#000) right/51% 100% no-repeat}
+.t-tick .half:last-child{mask:radial-gradient(14px at 0 0,#0000 98%,#000) left/51% 100% no-repeat,radial-gradient(14px at 100% 0,#0000 98%,#000) right/51% 100% no-repeat;border-top:2px dashed #14182a33}
+.t-tick .event{font-family:var(--display);font-weight:800;font-stretch:120%;font-size:34px;line-height:.95;letter-spacing:-.02em}
+.t-tick dl{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin:20px 0 0}
+.t-tick dt{font-size:12px;color:#4b5068}
+.t-tick dd{margin:0;font-weight:600;font-size:17px;font-variant-numeric:tabular-nums}
+.t-tick svg{width:100%;height:56px;display:block}
+.t-tick .code{font-size:12px;letter-spacing:.2em;color:#4b5068;margin-top:6px;font-variant-numeric:tabular-nums}
+.t-fact{grid-area:fact}
+.t-fact .big{font-family:var(--display);font-weight:800;font-stretch:60%;font-size:96px;line-height:.85}
+.t-fact .big small{font-size:.3em;font-stretch:100%;margin-left:6px;font-weight:600}
+.t-fact p{color:var(--dim);margin-top:12px}
+.t-comet{grid-area:comet}
+.t-comet .big{font-family:var(--display);font-weight:700;font-stretch:80%;font-size:40px;line-height:1}
+.t-comet p{color:var(--dim);margin-top:10px}
+.t-time{grid-area:time}
+.t-time ol{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:0}
+.t-time li{display:grid;grid-template-columns:88px 1fr;gap:16px;padding:12px 0;box-shadow:inset 0 -1px 0 #ffffff14}
+.t-time li b{font-family:var(--display);font-stretch:70%;font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.t-time li span{color:var(--dim)}
+.t-pack{grid-area:pack}
+.t-pack ul{margin:8px 0 0;padding-left:18px;color:var(--dim)}
+.t-pack li+li{margin-top:6px}
+@media (max-width:1000px){
+  .bento{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"rate rate" "tick tick" "fact comet" "time time" "pack pack"}
+  .hero .copy{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:640px){
+  .bento{grid-template-columns:minmax(0,1fr);grid-template-areas:"rate" "tick" "fact" "comet" "time" "pack"}
+  .t-rate{grid-template-columns:minmax(0,1fr)}
+  .t-rate .num{grid-column:1;grid-row:auto;text-align:left}
+  .bars{height:150px;gap:3px}.bars-x{gap:3px;font-size:10px}
+  .bars-x span:nth-child(even){visibility:hidden}
+  .tile{padding:22px;border-radius:22px}
+  .glass{right:16px;left:16px;width:auto;top:auto;bottom:24px;transform:none;padding:26px;border-radius:30px}
+  .bento-wrap{padding-block:104px}
+}
+footer{padding-block:64px 40px}
+footer .name{font-family:var(--display);font-weight:800;font-stretch:150%;font-size:calc((min(100vw,1320px) - 64px) / 8.2);white-space:nowrap;line-height:.8;letter-spacing:-.03em;margin:0 0 32px -.04em}
+footer p{font-size:14px;color:var(--dim);max-width:80ch}
+@media (prefers-reduced-motion:reduce){.btn,.bars button i{transition:none}}
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <div class="pb" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><b></b></div>
+  <div class="in wrap">
+    <a class="mark" href="#top">Perseid Night</a>
+    <nav aria-label="Sections"><a href="#look">Where to look</a><a href="#night">The night</a></nav>
+    <a class="btn" href="#night">Field ticket</a>
+  </div>
+</header>
+
+<main id="main">
+<section class="hero" id="top" aria-labelledby="h1">
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <span class="radiant-tag" id="rtag" aria-hidden="true">radiant, in Perseus</span>
+  <div class="wrap">
+    <div class="copy">
+      <h1 id="h1">One night, up to a hundred meteors an hour.</h1>
+      <div class="meta">
+        <p>12/13 August 2027, 21:00 to 04:00, on a dark field with no lamps for six kilometres. Bring a mat; we bring the tea and the quiet.</p>
+        <p><a class="btn" href="#night">Get a field ticket, 45 zł</a></p>
+      </div>
+    </div>
+    <span class="giant" id="giant" aria-hidden="true">PERSEIDS</span>
+  </div>
+</section>
+
+<section class="look" id="look" aria-labelledby="look-h">
+  <canvas id="chart" role="img" aria-label="Star chart of the north-eastern sky with Cassiopeia, Perseus and the Perseid radiant marked"></canvas>
+  <div class="glass" id="glass">
+    <h2 id="look-h">Face north-east and look up.</h2>
+    <p>The meteors can cross any part of the sky, but trace them backwards and they all meet in Perseus, just below the W of Cassiopeia.</p>
+    <p class="tip">The radiant climbs all night. At 22:00 it is 27° above the horizon, by 04:00 it is 67°, which is why the best hour is the last dark one.</p>
+  </div>
+</section>
+
+<section class="bento-wrap" id="night" aria-labelledby="night-h">
+  <div class="wrap">
+    <h2 id="night-h">How many will you see?</h2>
+    <div class="bento">
+      <article class="tile t-rate" aria-labelledby="rate-h">
+        <div><h3 id="rate-h">Expected meteors per hour</h3><p class="intro">Pick how dark your sky is, then tap an hour. The count follows the radiant as it climbs.</p></div>
+        <p class="num"><output id="num" aria-live="polite">86</output><small id="numsub">at 03:00 on the field</small></p>
+        <div class="bars" id="bars" role="group" aria-label="Hour of the night"></div>
+        <div class="bars-x" id="barsx" aria-hidden="true"></div>
+        <fieldset class="sky-ctl" style="border:0;padding:0;margin:20px 0 0">
+          <legend class="sr" style="position:absolute;left:-9999px">Sky darkness</legend>
+          <label><input type="radio" name="lm" value="6.5" checked> Dark field</label>
+          <label><input type="radio" name="lm" value="5.5"> Village edge</label>
+          <label><input type="radio" name="lm" value="4.5"> City balcony</label>
+        </fieldset>
+        <p class="note">Rate = ZHR × sin(radiant altitude) ÷ r^(6.5 − limiting magnitude), with ZHR 100 and population index r = 2.2, for Kraków (50° N, 20° E), local summer time. A typical peak; real nights vary.</p>
+      </article>
+      <article class="tile t-tick" aria-label="Field ticket">
+        <div class="half">
+          <p class="event">Perseid Night 2027</p>
+          <dl><div><dt>Date</dt><dd>12/13 Aug</dd></div><div><dt>Gates</dt><dd>21:00</dd></div><div><dt>Field</dt><dd>B</dd></div><div><dt>Mat</dt><dd>14</dd></div><div><dt>Price</dt><dd>45 zł</dd></div><div><dt>Holder</dt><dd>You</dd></div></dl>
+        </div>
+        <div class="half"><svg id="barcode" viewBox="0 0 300 56" preserveAspectRatio="none" aria-hidden="true"></svg><p class="code" id="code">PN27 0812 B014</p></div>
+      </article>
+      <article class="tile t-fact"><p class="big">59<small>km/s</small></p><p>Perseids hit the air head-on, which is why so many leave a trail that glows for a second after them.</p></article>
+      <article class="tile t-comet"><p class="big">109P/Swift–Tuttle</p><p>The comet that left the dust. It passes every 133 years; Earth crosses its trail every August.</p></article>
+      <article class="tile t-time"><h3>The night</h3>
+        <ol>
+          <li><b>21:00</b><span>Gates open. Find your mat while there is still some light.</span></li>
+          <li><b>22:30</b><span>Ten-minute talk at the red lamp: how to see more with averted vision.</span></li>
+          <li><b>23:00</b><span>All lights off, phones on night mode. Eyes need 20 minutes to adapt.</span></li>
+          <li><b>02:00</b><span>Hot tea at the tent. The rate is climbing.</span></li>
+          <li><b>04:00</b><span>Nautical dawn. The last bright ones of the night.</span></li>
+        </ol>
+      </article>
+      <article class="tile t-pack"><h3>Bring</h3><ul><li>A mat and a sleeping bag</li><li>Warm layers, it drops to 10 °C</li><li>A red torch, no white light</li><li>Nothing to look through: the best view is wide</li></ul></article>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap">
+  <p class="name" aria-hidden="true">PERSEIDS</p>
+  <p>Perseid Night is a fictional event made for a design demo; the venue, ticket and programme are invented. The astronomy is real and approximate: the radiant position, the parent comet, the entry speed and the rate formula; star positions on the chart are approximate. Everything is drawn in code: meteors in a WebGL fragment shader, the chart on a canvas, and the liquid glass as a lens shader that re-draws the chart inside the card, so the refraction looks the same in Chrome, Firefox and Safari.</p>
+</div></footer>
+
+<script>
+(function(){
+  'use strict';
+  var RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var STILL = /[?&]still/.test(location.search);
+  var rad = Math.PI / 180;
+
+  /* ---------- astronomy: radiant altitude for Kraków, 12/13 August, local summer time ---------- */
+  var PHI = 50.06 * rad, DEC = 58 * rad, RA = 3.2, GMST0 = 21.36, LON = 19.94 / 15;
+  function sinAlt(localHour){ var ut = localHour - 2, lst = ((GMST0 + 1.0027379 * ut + LON) % 24 + 24) % 24, H = (lst - RA) * 15 * rad;
+    return Math.sin(PHI) * Math.sin(DEC) + Math.cos(PHI) * Math.cos(DEC) * Math.cos(H); }
+  function rate(h, lm){ return Math.max(0, Math.round(100 * Math.max(0, sinAlt(h)) / Math.pow(2.2, 6.5 - lm))); }
+
+  /* ---------- hero sky: stars, milky way and meteors as light rays ---------- */
+  var cv = document.getElementById('sky'), gl = cv.getContext('webgl', { antialias: false, alpha: false, preserveDrawingBuffer: STILL });
+  var MAXM = 8, meteors = [], radiant = [.18, .78]; // radiant in uv (x right, y up), placed top-left
+  if (gl){
+    var vs = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+    var fs = [
+      'precision highp float;uniform vec2 R;uniform float T;uniform vec4 M[' + MAXM + '];uniform float A[' + MAXM + '];uniform vec2 RAD;',
+      'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
+      'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}',
+      'float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*n(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return v;}',
+      'void main(){vec2 uv=gl_FragCoord.xy/R;float asp=R.x/R.y;vec2 p=vec2(uv.x*asp,uv.y);',
+      ' vec3 c=mix(vec3(.010,.016,.050),vec3(.030,.040,.095),smoothstep(0.,1.,uv.y));',
+      ' vec2 q=p-vec2(.2*asp,1.1);float band=exp(-pow(dot(q,normalize(vec2(.55,-1.)))*2.6,2.));', // milky way band
+      ' float cl=fbm(p*3.+fbm(p*5.)*1.6);c+=vec3(.20,.22,.34)*pow(cl,3.)*band*1.4;c-=vec3(.02)*smoothstep(.55,.8,fbm(p*9.))*band;',
+      ' for(int k=0;k<3;k++){float s=k==0?220.:k==1?480.:900.;vec2 g=floor(p*s);vec2 f=fract(p*s)-.5;float r=h(g+float(k)*7.1);',
+      '  if(r>.985-float(k)*.004){float b=(r-.97)*40.*(1.-float(k)*.25);float tw=.75+.25*sin(T*(1.+r*3.)+r*40.);c+=vec3(.9,.92,1.)*b*tw*smoothstep(.5,0.,length(f))*(1.+band*.6);}}',
+      ' for(int i=0;i<' + MAXM + ';i++){if(A[i]<=0.)continue;vec2 hd=vec2(M[i].x*asp,M[i].y);vec2 d=normalize(vec2(M[i].z*asp,M[i].w));',
+      '  float L=A[i];vec2 v=p-hd;float al=-dot(v,d);float pe=abs(v.x*d.y-v.y*d.x);', // distance behind the head, distance off the line
+      '  if(al>-.02&&al<L){float t=clamp(1.-al/L,0.,1.);float fade=pow(t,1.6)*step(0.,al);',
+      '   float core=.00042/(pe*(1.+al*6.)+.00016)*fade;float halo=.0055/(pe+.0055)*fade*.28;',
+      '   c+=vec3(1.,.95,.84)*(core+halo)*.6;}',
+      '  float fl=length(v);c+=vec3(.82,1.,.86)*(exp(-fl*90.)*1.2+.0009/(fl*fl*60.+.0009)*.35);}',
+      ' c=1.-exp(-c*1.6);c+=(h(gl_FragCoord.xy+T)-.5)/255.;gl_FragColor=vec4(c,1.);}'
+    ].join('\n');
+    function sh(t, s){ var o = gl.createShader(t); gl.shaderSource(o, s); gl.compileShader(o); if (!gl.getShaderParameter(o, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(o)); return o; }
+    var pr = gl.createProgram(); gl.attachShader(pr, sh(gl.VERTEX_SHADER, vs)); gl.attachShader(pr, sh(gl.FRAGMENT_SHADER, fs)); gl.linkProgram(pr); gl.useProgram(pr);
+    var buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    var loc = gl.getAttribLocation(pr, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    var uR = gl.getUniformLocation(pr, 'R'), uT = gl.getUniformLocation(pr, 'T'), uM = gl.getUniformLocation(pr, 'M'), uA = gl.getUniformLocation(pr, 'A'), uRad = gl.getUniformLocation(pr, 'RAD');
+    var seed = 3; function rnd(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    function spawn(m, t0){ // a meteor lights up some way from the radiant and runs straight away from it (directions that stay on screen)
+      var ang = -1.45 + rnd() * 1.6, dist = .1 + rnd() * .35;
+      m.sx = radiant[0] + Math.cos(ang) * dist * .75; m.sy = radiant[1] + Math.sin(ang) * dist;
+      m.dx = Math.cos(ang); m.dy = Math.sin(ang); m.t0 = t0; m.dur = .5 + rnd() * .6; m.travel = .22 + rnd() * .3;
+    }
+    for (var i = 0; i < MAXM; i++){ var m = {}; spawn(m, i * .9 + rnd() * 2); meteors.push(m); }
+    var Mv = new Float32Array(MAXM * 4), Av = new Float32Array(MAXM), W = 0, H = 0;
+    function draw(t){
+      var dpr = Math.min(devicePixelRatio || 1, 1.5), w = Math.round(cv.clientWidth * dpr), hh = Math.round(cv.clientHeight * dpr);
+      if (w !== W || hh !== H){ W = cv.width = w; H = cv.height = hh; gl.viewport(0, 0, W, H); }
+      for (var i = 0; i < MAXM; i++){ var m = meteors[i], k = (t - m.t0) / m.dur;
+        if (k > 1 && !STILL){ spawn(m, t + rnd() * 2.5); k = -1; }
+        var go = Math.max(0, Math.min(1, k)), dlen = Math.hypot(m.dx * .75, m.dy);
+        Mv[i * 4] = m.sx + m.dx * .75 / dlen * m.travel * go * .75 / .75; Mv[i * 4 + 1] = m.sy + m.dy / dlen * m.travel * go; Mv[i * 4 + 2] = m.dx * .75 / dlen; Mv[i * 4 + 3] = m.dy / dlen;
+        Av[i] = k <= 0 || k >= 1 ? 0 : Math.min(m.travel * go, .2) * (k > .75 ? 1 - (k - .75) * 3.6 : 1); }
+      gl.uniform2f(uR, W, H); gl.uniform1f(uT, t); gl.uniform4fv(uM, Mv); gl.uniform1fv(uA, Av); gl.uniform2f(uRad, radiant[0], radiant[1]);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+    var vis = true; new IntersectionObserver(function(e){ vis = e[0].isIntersecting; }).observe(cv);
+    if (STILL || RM){ // a fixed, readable moment: four meteors mid-flight
+      [0, 1, 2, 3, 4].forEach(function(i){ meteors[i].t0 = -meteors[i].dur * (.45 + i * .09); });
+      for (var j = 5; j < MAXM; j++) meteors[j].t0 = 99;
+      draw(0); addEventListener('resize', function(){ W = 0; draw(0); });
+      window.__sky = function(t){ if (!window.__skyLive){ window.__skyLive = 1; meteors.forEach(function(m, i){ spawn(m, i * .35); }); STILL = false; } draw(t); };
+    } else (function loop(now){ requestAnimationFrame(loop); if (vis) draw(now / 1000); })(performance.now());
+    var tag = document.getElementById('rtag');
+    function placeTag(){ tag.style.left = (radiant[0] * cv.clientWidth) + 'px'; tag.style.top = ((1 - radiant[1]) * cv.clientHeight) + 'px'; }
+    placeTag(); addEventListener('resize', placeTag);
+  }
+
+  /* ---------- giant type fitted to the width, letters widen near the cursor ---------- */
+  var giant = document.getElementById('giant'), letters = [];
+  giant.innerHTML = giant.textContent.split('').map(function(c){ return '<span>' + c + '</span>'; }).join('');
+  letters = [].slice.call(giant.children);
+  function fit(){
+    var pcs = getComputedStyle(giant.parentElement), avail = giant.parentElement.clientWidth - parseFloat(pcs.paddingLeft) - parseFloat(pcs.paddingRight);
+    letters.forEach(function(s){ s.style.setProperty('--w', 100); s.style.setProperty('--g', 780); });
+    giant.style.transform = ''; giant.style.fontSize = '100px';
+    var w = giant.getBoundingClientRect().width; giant.style.fontSize = (100 * avail / w * .995) + 'px';
+  }
+  var lastW = 0; (document.fonts ? document.fonts.ready : Promise.resolve()).then(fit);
+  new ResizeObserver(function(){ var w = giant.parentElement.clientWidth; if (w !== lastW){ lastW = w; requestAnimationFrame(fit); } }).observe(giant.parentElement);
+  if (!RM && matchMedia('(hover: hover) and (pointer: fine)').matches){
+    var hero = document.getElementById('top'), mx = -1e4, raf = 0;
+    hero.addEventListener('pointermove', function(e){ mx = e.clientX; if (!raf) raf = requestAnimationFrame(wave); });
+    hero.addEventListener('pointerleave', function(){ mx = -1e4; if (!raf) raf = requestAnimationFrame(wave); });
+    function wave(){ raf = 0; giant.style.transform = '';
+      var base = giant.getBoundingClientRect().width;
+      letters.forEach(function(s){ var r = s.getBoundingClientRect(), d = (r.left + r.width / 2 - mx) / 160, k = Math.exp(-d * d);
+        s.style.setProperty('--w', (100 + 50 * k).toFixed(1)); s.style.setProperty('--g', (780 - 360 * k).toFixed(0)); });
+      var real = giant.getBoundingClientRect().width; giant.style.transform = 'scaleX(' + (base / real).toFixed(4) + ')'; giant.style.transformOrigin = 'left';
+    }
+  }
+
+  /* ---------- star chart (approximate positions) under the glass ---------- */
+  var chart = document.getElementById('chart'), cx = chart.getContext('2d');
+  var STARS = [ // name, RA h, Dec deg, magnitude
+    ['Caph', .15, 59.15, 2.3], ['Schedar', .675, 56.54, 2.2], ['γ Cas', .945, 60.72, 2.4], ['Ruchbah', 1.43, 60.24, 2.7], ['Segin', 1.906, 63.67, 3.4],
+    ['Mirfak', 3.405, 49.86, 1.8], ['Algol', 3.136, 40.96, 2.1], ['γ Per', 3.08, 53.5, 2.9], ['δ Per', 3.715, 47.79, 3.0], ['ε Per', 3.964, 40.01, 2.9], ['η Per', 2.845, 55.9, 3.8], ['ζ Per', 3.902, 31.88, 2.9],
+    ['Capella', 5.278, 46.0, .1], ['Polaris', 2.53, 89.26, 2.0], ['Almach', 2.065, 42.33, 2.1], ['Mirach', 1.162, 35.62, 2.1]
+  ];
+  var LINES = [['Caph', 'Schedar'], ['Schedar', 'γ Cas'], ['γ Cas', 'Ruchbah'], ['Ruchbah', 'Segin'], ['η Per', 'γ Per'], ['γ Per', 'Mirfak'], ['Mirfak', 'δ Per'], ['δ Per', 'ε Per'], ['ε Per', 'ζ Per'], ['Mirfak', 'Algol']];
+  function proj(raH, dec, W, H){ // gnomonic-ish projection centred between Cassiopeia and Perseus
+    var ra0 = 2.4 * 15 * rad, d0 = 56 * rad, a = raH * 15 * rad, d = dec * rad;
+    var cosc = Math.sin(d0) * Math.sin(d) + Math.cos(d0) * Math.cos(d) * Math.cos(a - ra0);
+    var x = Math.cos(d) * Math.sin(a - ra0) / cosc, y = (Math.cos(d0) * Math.sin(d) - Math.sin(d0) * Math.cos(d) * Math.cos(a - ra0)) / cosc;
+    var s = Math.min(W, H) * 1.35, ox = W < 760 ? W * .5 : W * .36;
+    return [ox - x * s, H * .48 - y * s];
+  }
+  var bg = []; var sd = 9; function r2(){ sd = (sd * 16807) % 2147483647; return sd / 2147483647; }
+  for (var b = 0; b < 900; b++) bg.push([r2(), r2(), Math.pow(r2(), 3)]);
+  var drift = 0;
+  function drawChart(){
+    var dpr = Math.min(devicePixelRatio || 1, 2), W = chart.clientWidth, H = chart.clientHeight;
+    if (chart.width !== Math.round(W * dpr)){ chart.width = Math.round(W * dpr); chart.height = Math.round(H * dpr); }
+    cx.setTransform(dpr, 0, 0, dpr, 0, 0); cx.fillStyle = '#060a1c'; cx.fillRect(0, 0, W, H);
+    cx.save(); cx.translate(W * .5, H * .5); cx.rotate(drift); cx.translate(-W * .5, -H * .5);
+    // RA/Dec grid: sharp lines are what makes the refraction visible
+    cx.strokeStyle = '#ffffff1f'; cx.lineWidth = 1;
+    for (var dd = 20; dd <= 80; dd += 10){ cx.beginPath(); for (var ra = 0; ra <= 6.01; ra += .05){ var p = proj(ra, dd, W, H); ra ? cx.lineTo(p[0], p[1]) : cx.moveTo(p[0], p[1]); } cx.stroke(); }
+    for (var ra2 = 0; ra2 <= 6; ra2 += .5){ cx.beginPath(); for (var d2 = 20; d2 <= 88; d2 += 1){ var p2 = proj(ra2, d2, W, H); d2 > 20 ? cx.lineTo(p2[0], p2[1]) : cx.moveTo(p2[0], p2[1]); } cx.stroke(); }
+    bg.forEach(function(s){ cx.fillStyle = 'rgba(230,234,255,' + (.25 + s[2] * .6) + ')'; cx.fillRect(s[0] * W, s[1] * H, 1 + s[2] * 1.4, 1 + s[2] * 1.4); });
+    var pos = {}; STARS.forEach(function(s){ pos[s[0]] = proj(s[1], s[2], W, H); });
+    cx.strokeStyle = '#cfd6ff99'; cx.lineWidth = 1.5;
+    LINES.forEach(function(l){ var a = pos[l[0]], c = pos[l[1]]; cx.beginPath(); cx.moveTo(a[0], a[1]); cx.lineTo(c[0], c[1]); cx.stroke(); });
+    STARS.forEach(function(s){ var p = pos[s[0]], r = Math.max(1.6, 5 - s[3] * 1.2); cx.fillStyle = '#f2f4ff'; cx.beginPath(); cx.arc(p[0], p[1], r, 0, 7); cx.fill(); });
+    cx.font = '14px "Instrument Sans", Arial, sans-serif'; cx.fillStyle = '#c5cbea';
+    var lab = function(t, raH, dec, dx, dy){ var p = proj(raH, dec, W, H); cx.fillText(t, p[0] + dx, p[1] + dy); };
+    lab('Cassiopeia', 1.1, 64.5, -30, 0); lab('Perseus', 3.6, 44, 14, 0); lab('Capella', 5.278, 46, 10, 4); lab('Polaris', 2.53, 89.26, 10, 4);
+    var rp = proj(3.2, 58, W, H); cx.strokeStyle = '#ffcf6e'; cx.lineWidth = 2; cx.beginPath(); cx.arc(rp[0], rp[1], 16, 0, 7); cx.stroke();
+    for (var k = 0; k < 10; k++){ var an = k / 10 * Math.PI * 2 + .3; cx.strokeStyle = 'rgba(255,207,110,' + (.5 - (k % 3) * .12) + ')'; cx.beginPath(); cx.moveTo(rp[0] + Math.cos(an) * 26, rp[1] + Math.sin(an) * 26); cx.lineTo(rp[0] + Math.cos(an) * (70 + (k % 4) * 30), rp[1] + Math.sin(an) * (70 + (k % 4) * 30)); cx.stroke(); }
+    cx.fillStyle = '#ffcf6e'; cx.fillText('radiant', rp[0] + 22, rp[1] - 20);
+    cx.restore();
+  }
+  var _draw = drawChart; drawChart = function(){ _draw(); if (typeof lens === 'function' && lens) lens(); };
+  drawChart(); addEventListener('resize', drawChart);
+  if (!RM && !STILL){ var lookVis = false; new IntersectionObserver(function(e){ lookVis = e[0].isIntersecting; }).observe(chart);
+    (function spin(){ requestAnimationFrame(spin); if (!lookVis) return; drift += .00012; drawChart(); })(); }
+
+  /* ---------- liquid glass: the chart is re-drawn through a lens shader inside the card's rounded rectangle.
+     Works the same in Chrome, Firefox and Safari (no SVG backdrop filters needed); CSS frosted glass is the fallback. ---------- */
+  var glass = document.getElementById('glass'), glc = document.createElement('canvas'), lens = null;
+  glc.id = 'chartgl'; glc.setAttribute('aria-hidden', 'true'); chart.parentNode.insertBefore(glc, chart.nextSibling);
+  (function(){
+    var g = glc.getContext('webgl', { antialias: false, alpha: false, preserveDrawingBuffer: STILL }); if (!g) { glc.remove(); return; }
+    var vs = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+    var fs = ['precision highp float;uniform sampler2D T;uniform vec2 R;uniform vec4 G;uniform float RAD,BAND,STR,BL,ON;',
+      'float sdr(vec2 p){vec2 c=G.xy+G.zw*.5;vec2 q=abs(p-c)-(G.zw*.5-RAD);return length(max(q,0.))+min(max(q.x,q.y),0.)-RAD;}',
+      'vec3 S(vec2 px){return texture2D(T,clamp(px/R,vec2(0.),vec2(1.))).rgb;}',
+      'void main(){vec2 p=vec2(gl_FragCoord.x,R.y-gl_FragCoord.y);vec3 c=S(p);float d=sdr(p);',
+      ' if(ON>.5&&d<0.){float t=clamp(-d/BAND,0.,1.);float mag=1.-sqrt(max(0.,1.-(1.-t)*(1.-t)));',
+      '  vec2 n=vec2(sdr(p+vec2(1.,0.))-sdr(p-vec2(1.,0.)),sdr(p+vec2(0.,1.))-sdr(p-vec2(0.,1.)));n/=max(length(n),1e-4);',
+      '  vec2 q=p+n*mag*STR;vec3 a=vec3(0.);',
+      '  for(int i=-2;i<=2;i++)for(int j=-2;j<=2;j++){a+=S(q+vec2(float(i),float(j))*BL);}',
+      '  vec3 k=a/25.;float l=dot(k,vec3(.299,.587,.114));k=mix(vec3(l),k,1.5);c=mix(k,vec3(.102,.11,.235),.15);}',
+      ' gl_FragColor=vec4(c,1.);}'].join('\n');
+    function sh(t, src){ var o = g.createShader(t); g.shaderSource(o, src); g.compileShader(o); if (!g.getShaderParameter(o, g.COMPILE_STATUS)) throw new Error(g.getShaderInfoLog(o)); return o; }
+    try { var pr = g.createProgram(); g.attachShader(pr, sh(g.VERTEX_SHADER, vs)); g.attachShader(pr, sh(g.FRAGMENT_SHADER, fs)); g.linkProgram(pr); g.useProgram(pr); }
+    catch (e) { console.warn('[glass] falling back to frosted glass:', e.message); glc.remove(); return; }
+    var b = g.createBuffer(); g.bindBuffer(g.ARRAY_BUFFER, b); g.bufferData(g.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), g.STATIC_DRAW);
+    var lp = g.getAttribLocation(pr, 'p'); g.enableVertexAttribArray(lp); g.vertexAttribPointer(lp, 2, g.FLOAT, false, 0, 0);
+    var tex = g.createTexture(); g.bindTexture(g.TEXTURE_2D, tex);
+    [[g.TEXTURE_MIN_FILTER, g.LINEAR], [g.TEXTURE_MAG_FILTER, g.LINEAR], [g.TEXTURE_WRAP_S, g.CLAMP_TO_EDGE], [g.TEXTURE_WRAP_T, g.CLAMP_TO_EDGE]].forEach(function(a){ g.texParameteri(g.TEXTURE_2D, a[0], a[1]); });
+    var U = {}; ['R', 'G', 'RAD', 'BAND', 'STR', 'BL', 'ON'].forEach(function(k){ U[k] = g.getUniformLocation(pr, k); });
+    lens = function(){
+      if (glc.width !== chart.width || glc.height !== chart.height){ glc.width = chart.width; glc.height = chart.height; g.viewport(0, 0, glc.width, glc.height); }
+      var dpr = chart.width / (chart.clientWidth || 1), rs = chart.getBoundingClientRect(), rg = glass.getBoundingClientRect();
+      g.texImage2D(g.TEXTURE_2D, 0, g.RGBA, g.RGBA, g.UNSIGNED_BYTE, chart);
+      g.uniform2f(U.R, glc.width, glc.height);
+      g.uniform4f(U.G, (rg.left - rs.left) * dpr, (rg.top - rs.top) * dpr, rg.width * dpr, rg.height * dpr);
+      g.uniform1f(U.RAD, (parseFloat(getComputedStyle(glass).borderTopLeftRadius) || 40) * dpr);
+      g.uniform1f(U.BAND, 46 * dpr); g.uniform1f(U.STR, -60 * dpr); g.uniform1f(U.BL, 2.4 * dpr); g.uniform1f(U.ON, 1);
+      g.drawArrays(g.TRIANGLES, 0, 3);
+    };
+    chart.style.visibility = 'hidden'; glass.classList.add('lens');
+    lens();
+  })();
+  addEventListener('resize', function(){ if (lens) lens(); });
+
+  /* ---------- the rate calculator ---------- */
+  var HOURS = []; for (var hh2 = 21; hh2 <= 27.5; hh2 += .5) HOURS.push(hh2);
+  var bars = document.getElementById('bars'), barsx = document.getElementById('barsx'), num = document.getElementById('num'), sub = document.getElementById('numsub');
+  var lm = 6.5, sel = HOURS.indexOf(27), PLACE = { '6.5': 'on the field', '5.5': 'at the village edge', '4.5': 'from a city balcony' };
+  var fmtH = function(h){ var H = Math.floor(h) % 24, m = Math.round((h % 1) * 60); return String(H).padStart(2, '0') + ':' + String(m).padStart(2, '0'); };
+  HOURS.forEach(function(h, i){ var b = document.createElement('button'); b.type = 'button'; b.innerHTML = '<i></i>'; b.setAttribute('aria-label', fmtH(h)); b.onclick = function(){ sel = i; render(); }; bars.appendChild(b);
+    var s = document.createElement('span'); s.textContent = fmtH(h); barsx.appendChild(s); });
+  function render(){
+    [].forEach.call(bars.children, function(b, i){ var v = rate(HOURS[i], lm); b.style.setProperty('--h', Math.max(2, v) + '%'); b.setAttribute('aria-pressed', i === sel ? 'true' : 'false'); b.setAttribute('aria-label', fmtH(HOURS[i]) + ', about ' + v + ' meteors per hour'); });
+    num.textContent = rate(HOURS[sel], lm); sub.textContent = 'per hour at ' + fmtH(HOURS[sel]) + ' ' + PLACE[String(lm)];
+  }
+  document.querySelectorAll('input[name=lm]').forEach(function(r){ r.addEventListener('change', function(){ lm = +r.value; render(); }); });
+  render();
+
+  /* ---------- ticket barcode (decorative, generated from the ticket code) ---------- */
+  var code = document.getElementById('code').textContent.replace(/\s/g, ''), bc = document.getElementById('barcode'), xx = 0, out = '';
+  for (var c2 = 0; c2 < code.length; c2++){ var v2 = code.charCodeAt(c2) * 7 + c2 * 13; for (var bit = 0; bit < 6; bit++){ var w2 = (v2 >> bit & 1) ? 3 : 1.4; if (bit % 2 === 0) out += '<rect x="' + xx.toFixed(1) + '" y="0" width="' + w2 + '" height="56" fill="#14182a"/>'; xx += w2 + 1.1; } }
+  bc.setAttribute('viewBox', '0 0 ' + xx.toFixed(1) + ' 56'); bc.innerHTML = out;
+})();
+</script>
+
+</body></html>

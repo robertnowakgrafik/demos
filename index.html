@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Six websites, one conversation with Claude — Robert Nowak</title>
+<meta name="description" content="Six web demos designed and built with Claude: 3D in code, an AI product film scrubbed by scroll, a chaptered site, real soft-body physics, 2026 UI trends and a generative identity.">
+<style>
+  :root{
+    --bg:#0b0c0e; --fg:#f2f1ee; --dim:#a7a6a1; --line:#26272b; --card:#141518; --accent:#c8b273;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.5;
+  }
+  .wrap{max-width:1040px; margin:0 auto; padding:clamp(28px,6vw,80px) clamp(20px,5vw,40px)}
+  header{margin-bottom:clamp(36px,6vw,64px)}
+  .kicker{font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:var(--dim); margin:0 0 18px}
+  h1{font-size:clamp(28px,5.5vw,52px); line-height:1.08; font-weight:600; margin:0 0 20px; letter-spacing:-.02em}
+  .lead{font-size:clamp(15px,2.2vw,18px); color:var(--dim); max-width:60ch; margin:0}
+  .stats{display:flex; flex-wrap:wrap; gap:8px 22px; margin-top:26px; font-size:13px; color:var(--dim)}
+  .stats b{color:var(--fg); font-weight:600}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px}
+  a.card{
+    display:block; text-decoration:none; color:inherit;
+    background:var(--card); border:1px solid var(--line); border-radius:14px;
+    padding:24px 24px 22px; transition:border-color .2s ease, transform .2s ease, background .2s ease;
+  }
+  a.card:hover{border-color:var(--accent); transform:translateY(-3px); background:#17181c}
+  .num{font-size:12px; letter-spacing:.14em; color:var(--accent); font-variant-numeric:tabular-nums}
+  .ttl{font-size:21px; font-weight:600; margin:12px 0 8px; letter-spacing:-.01em}
+  .sub{font-size:14px; color:var(--dim); margin:0}
+  .go{margin-top:18px; font-size:13px; color:var(--dim); display:flex; align-items:center; gap:7px}
+  a.card:hover .go{color:var(--fg)}
+  .go svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6}
+  footer{margin-top:clamp(40px,7vw,72px); padding-top:24px; border-top:1px solid var(--line); font-size:13px; color:var(--dim)}
+  footer a{color:var(--fg); text-decoration:none; border-bottom:1px solid var(--line)}
+  footer a:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="kicker">Robert Nowak · Tech demos</p>
+    <h1>Six websites, one conversation with Claude</h1>
+    <p class="lead">What you can design and build with Claude today, from idea to a working site. Each demo shows a different technique. All brands are fictional, every word is written for its subject, and nothing here is a mock-up — these are the live pages.</p>
+    <div class="stats">
+      <span><b>6</b> working sites</span>
+      <span><b>3</b> rendered in WebGL</span>
+      <span><b>16</b> AI images + 2 films</span>
+      <span><b>0</b> stock photos</span>
+    </div>
+  </header>
+
+  <main class="grid">
+    <a class="card" href="kadr-50/">
+      <span class="num">01</span>
+      <div class="ttl">Kadr 50 f/1.2</div>
+      <p class="sub">A lens built in code — scroll takes it apart into ten elements and stops it down from f/1.2 to f/16.</p>
+      <span class="go">Open demo <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card" href="luna/">
+      <span class="num">02</span>
+      <div class="ttl">Łuna</div>
+      <p class="sub">An AI product film scrubbed by scroll — the bottle turns and the mist drifts exactly in step.</p>
+      <span class="go">Open demo <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card" href="mgla/">
+      <span class="num">03</span>
+      <div class="ttl">Mgła</div>
+      <p class="sub">A tea house told in five chapters, with a product film scrubbed by scroll.</p>
+      <span class="go">Open demo <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card" href="kisiel/">
+      <span class="num">04</span>
+      <div class="ttl">Kisiel</div>
+      <p class="sub">A jelly you can poke — real soft-body physics, solved live in the browser.</p>
+      <span class="go">Open demo <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card" href="perseid-night/">
+      <span class="num">05</span>
+      <div class="ttl">Perseid Night</div>
+      <p class="sub">2026 UI trends with a job to do — liquid glass, bento and giant type, in service of the content.</p>
+      <span class="go">Open demo <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+    <a class="card" href="szum/">
+      <span class="num">06</span>
+      <div class="ttl">Szum</div>
+      <p class="sub">An identity made of noise — a generative brand system that redraws itself.</p>
+      <span class="go">Open demo <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+  </main>
+
+  <footer>
+    Designed &amp; built with Claude · <a href="https://www.behance.net/robertgrafik">Behance</a> · <a href="https://www.linkedin.com/in/robert-nowak-grafik">LinkedIn</a>
+  </footer>
+</div>
+</body>
+</html>

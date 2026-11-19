@@ -186,7 +186,7 @@ footer p{font-size:14px;color:var(--ink-2);max-width:80ch}
 <section class="ss-seq" id="top" data-src="frames" data-count="121" data-fit="cover" data-bg="#03060c" style="--ss-scroll:560vh;--ss-bg:#03060c" aria-label="Łuna, the bottle in motion">
   <div class="ss-stage">
     <img class="ss-poster" src="frames/0001.webp" alt="A square bottle of amber perfume with a black stone-shaped cap on a basalt slab" fetchpriority="high">
-    <div class="film-controls" hidden><button type="button">Play animation</button><button type="button" data-enable-scroll hidden>Enable scroll animation</button><span>Scroll to explore</span></div>
+    <div class="film-controls" hidden><button type="button">Play animation</button><span>Scroll to explore</span></div>
     <div class="ss-scrim" aria-hidden="true"></div>
     <div class="ss-beat ss-left" data-in="0" data-out=".16">
       <h1>Łuna</h1>
@@ -280,7 +280,6 @@ footer p{font-size:14px;color:var(--ink-2);max-width:80ch}
 
   function init(root) {
     if (root.__ss) return; root.__ss = 1;
-    var reduceMotion = RM;
     var d = root.dataset;
     var small = Math.min(innerWidth, innerHeight) < 700 || innerWidth < 900;
     var base = ((small && d.srcMobile) || d.src).replace(/\/$/, '');
@@ -303,7 +302,7 @@ footer p{font-size:14px;color:var(--ink-2);max-width:80ch}
       if (/(hidden|auto|scroll)/.test(cs.overflowX + cs.overflowY)) console.warn('[scroll-seq] position:sticky blocked by overflow on', el, '— set overflow-x:clip on it');
     }
     var editor = document.body.classList.contains('elementor-editor-active');
-    if (reduceMotion || editor || !ctx) { root.classList.add('ss-static'); beats.forEach(function (b) { b.style.opacity = 1; }); if (editor || !ctx) return; }
+    if (editor || !ctx) { root.classList.add('ss-static'); beats.forEach(function (b) { b.style.opacity = 1; }); if (editor || !ctx) return; }
 
     // coarse-to-fine load order: first, last, then every 32nd, 16th ... frame
     var imgs = new Array(N), order = [0, N - 1], seen = new Uint8Array(N), cur = 0, started = false;
@@ -358,13 +357,12 @@ footer p{font-size:14px;color:var(--ink-2);max-width:80ch}
       if (!visible) { last = now; return; }
       resize();
       var scrollPosition = progress();
-      if (!reduceMotion && scrollPosition !== previousScroll) {
+      if (scrollPosition !== previousScroll) {
         manual = false;
         playing = false;
         button.textContent = 'Play animation';
       }
       previousScroll = scrollPosition;
-      if (reduceMotion && !manual) return;
       if (playing && root.classList.contains('ss-ready')) {
         position = Math.min(1, position + Math.min(100, now - (last || now)) / 8000);
         if (position === 1) { playing = false; button.textContent = 'Play animation'; }
@@ -375,7 +373,7 @@ footer p{font-size:14px;color:var(--ink-2);max-width:80ch}
       if (manual) head = target;
       head += (target - head) * (1 - Math.exp(-dt * 12)); // frame-rate independent smoothing
       if (Math.abs(target - head) < 0.01) head = target;
-      if (!reduceMotion && p !== lastP) { beatsAt(p); lastP = p; }
+      if (p !== lastP) { beatsAt(p); lastP = p; }
       var i = Math.floor(head), t = head - i, a = nearest(i), b = t > 0.02 && i + 1 < N ? imgs[i + 1] : null;
       if (!a || !cw || !ch) return;
       if (!dirty && a === pa && b === pb && (!b || Math.abs(t - pt) < 0.005)) return; // nothing changed
@@ -389,20 +387,6 @@ footer p{font-size:14px;color:var(--ink-2);max-width:80ch}
     var controls = stage.querySelector('.film-controls'), button = controls.querySelector('button');
     var playing = false, manual = false, position = 0, previousScroll = progress();
     controls.hidden = false;
-    var enableScroll = controls.querySelector('[data-enable-scroll]');
-    enableScroll.hidden = !reduceMotion;
-    enableScroll.addEventListener('click', function () {
-      reduceMotion = false;
-      playing = false;
-      manual = false;
-      button.textContent = 'Play animation';
-      root.classList.remove('ss-static', 'film-manual');
-      enableScroll.hidden = true;
-      lastP = -1;
-      dirty = true;
-      root.scrollIntoView({block: 'start', behavior: 'instant'});
-      startLoading();
-    });
     button.addEventListener('click', function () {
       position = head / (N - 1);
       if (!playing && position >= 0.99) position = 0;
@@ -415,10 +399,10 @@ footer p{font-size:14px;color:var(--ink-2);max-width:80ch}
     });
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (e) {
-        e.forEach(function (x) { if (!reduceMotion && x.isIntersecting) startLoading(); });
+        e.forEach(function (x) { if (x.isIntersecting) startLoading(); });
       }, { rootMargin: '1200px 0px' }).observe(root);
       new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(root);
-    } else if (!reduceMotion) startLoading();
+    } else startLoading();
     requestAnimationFrame(tick);
   }
 

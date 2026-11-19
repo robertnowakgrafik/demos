@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.model-preview{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.model-preview[hidden]{display:none}</style></head><body>
 <title>Kadr 50 f/1.2</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Kadr 50 f/1.2: a manual-focus 50 mm lens with eleven rounded aperture blades. A scroll-driven 3D product page, modelled entirely in code.">
@@ -147,7 +147,7 @@ footer p{font-size:14px;color:var(--ink-2);max-width:72ch}
 <main id="main">
 <section id="story" aria-label="Kadr 50 f/1.2, scroll to take it apart">
   <div class="stage" id="top">
-    <canvas id="gl" aria-hidden="true"></canvas>
+    <svg class="model-preview" viewBox="0 0 500 340" role="img" aria-label="Static product illustration"><g fill="#353535" stroke="#888" stroke-width="2"><path d="M128 105 L309 73 Q397 124 367 229 L172 262Z"/><ellipse cx="152" cy="183" rx="66" ry="85" transform="rotate(-18 152 183)"/><ellipse cx="152" cy="183" rx="48" ry="66" fill="#202f39"/><ellipse cx="152" cy="183" rx="29" ry="43" fill="#39505e"/></g></svg><canvas id="gl" aria-hidden="true"></canvas>
     <div class="labels" id="labels" aria-hidden="true"></div>
 
     <div class="beat l" id="b1" data-in="0" data-out=".11">
@@ -254,7 +254,7 @@ footer p{font-size:14px;color:var(--ink-2);max-width:72ch}
   <p>Kadr is a fictional optics brand made for a design and engineering demo. The lens, its specifications and batch are invented; the depth-of-field maths is real. The 3D lens is modelled entirely in code with Three.js: no photos, no 3D files. Reservation is a demo and sends nothing.</p>
 </div></footer>
 
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
+<script type="importmap">{"imports":{"three":"../vendor/three/build/three.module.js","three/addons/":"../vendor/three/examples/jsm/"}}</script>
 <script>
 /* ---------- shared optics maths (used by the 3D stage and the lab) ---------- */
 window.KADR = (function(){
@@ -544,6 +544,7 @@ function frame(now){
   pd.textContent = s.f < .02 ? '∞' : KADR.fmtM(450 / Math.max(.01, s.f));
   pst.textContent = s.e > .5 ? 'exploded view, 10 elements' : 'assembled';
   renderer.render(scene, camera);
+  document.querySelector('.model-preview').setAttribute('hidden','');
   // labels
   const show = s.e > .78 && target > .36 && target < .58 && !mobile;
   lens.updateMatrixWorld(true);

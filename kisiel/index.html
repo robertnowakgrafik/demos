@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.model-preview{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.model-preview[hidden]{display:none}</style></head><body>
 <title>Kisiel Jelly Bar</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Kisiel sets two-layer jellies by hand. Poke one: it is simulated live in your browser with real soft-body physics.">
@@ -143,8 +143,8 @@ footer p{font-size:14px;color:var(--ink-2);max-width:76ch}
 <section class="wrap hero" id="top" aria-labelledby="h1">
   <div class="stage" id="stage">
     <div class="copy"><h1 id="h1">A jelly you can poke.</h1></div>
-    <div class="gl" id="gl"><canvas id="view" aria-label="A two-layer jelly on a plate. Drag it to pull, drag the background to turn the plate." role="img"></canvas></div>
-    <p class="hint" id="hint"><span><b>Drag the jelly</b> to pull it</span><span><b>Drag the plate</b> to turn it</span></p>
+    <div class="gl" id="gl"><svg class="model-preview" viewBox="0 0 500 340" role="img" aria-label="Static product illustration"><ellipse cx="250" cy="248" rx="160" ry="24" fill="#ded4cc"/><path d="M133 221 Q148 151 169 111 Q249 76 331 111 Q352 149 367 221 Q250 273 133 221Z" fill="#bc3659"/><path d="M150 171 Q250 208 350 171 L367 221 Q250 273 133 221Z" fill="#efaa7d"/><ellipse cx="250" cy="110" rx="81" ry="18" fill="#e97088"/></svg><canvas id="view" aria-label="A two-layer jelly on a plate. Drag it to pull, drag the background to turn the plate." role="img"></canvas></div>
+    <p class="hint" id="hint"><span><b>Tap or drag the jelly</b></span><span><b>Drag the plate</b> to turn it</span></p>
   </div>
   <aside class="card" aria-labelledby="rec-h">
     <p class="lead">Kisiel sets two-layer jellies by hand. This one is simulated live in your browser, so every poke wobbles differently.</p>
@@ -581,7 +581,7 @@ footer p{font-size:14px;color:var(--ink-2);max-width:76ch}
 })(typeof self !== 'undefined' ? self : this);
 
 </script>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js"}}</script>
+<script type="importmap">{"imports":{"three":"../vendor/three/build/three.module.js"}}</script>
 <script type="module">
 import * as THREE from 'three';
 const $ = id => document.getElementById(id);
@@ -721,6 +721,7 @@ function render(){
     $('rHz').textContent = hz ? hz.toFixed(1) + ' Hz' : 'at rest';
   }
   renderer.render(scene, camera);
+  document.querySelector('.model-preview').setAttribute('hidden','');
 }
 function loop(now){
   requestAnimationFrame(loop);

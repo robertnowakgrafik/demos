@@ -1,4 +1,12 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}.film-controls{position:absolute;z-index:4;bottom:12px;left:16px;display:flex;align-items:center;gap:8px;padding:4px;border-radius:24px;background:#161616eb;color:white;font:13px/1.2 system-ui}
+.film-controls[hidden]{display:none}
+.film-controls button{min-height:44px;padding:0 16px;border:0;border-radius:22px;font:inherit;cursor:pointer;background:white;color:#111}
+.film-controls span{padding-right:10px}
+.ss-static .film-controls{position:relative;bottom:auto;left:auto;width:fit-content;margin:10px auto}
+.ss-static .film-controls span{display:none}
+.ss-static.film-manual .ss-canvas{display:block;height:70vh}
+.ss-static.film-manual.ss-ready .ss-poster{opacity:0}
+</style></head><body>
 <title>Mgła Tea House</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Mgła is a small tea house where every tea is weighed to the gram and brewed by the clock. A scroll-driven site in five chapters.">
@@ -220,6 +228,7 @@ footer p{font-size:15px;color:#a6a8a1;max-width:80ch}
 <section class="ss-seq" id="top" data-src="frames" data-count="121" data-fit="cover" data-bg="#0c0c0c" style="--ss-scroll:560vh;--ss-bg:#0c0c0c" aria-label="Brewing a pot of sencha">
   <div class="ss-stage">
     <img class="ss-poster" src="frames/0001.webp" alt="A glass teapot of green tea on a walnut counter by a misty window" fetchpriority="high">
+    <div class="film-controls" hidden><button type="button">Play animation</button><button type="button" data-enable-scroll hidden>Enable scroll animation</button><span>Scroll to explore</span></div>
     <div class="ss-scrim" aria-hidden="true"></div>
     <div class="ss-beat ss-left" data-in="0" data-out=".2"><h1>Leaves, rolled tight.</h1><p>Mgła is a small tea house. Every tea here is weighed to the gram and brewed by the clock.</p><a class="btn" href="#book">Book a tasting</a></div>
     <div class="ss-beat ss-left" data-in=".26" data-out=".46"><h2>Water at 75 °C.</h2><p>Hot enough to open a sencha, cool enough to keep it sweet.</p></div>
@@ -333,6 +342,7 @@ footer p{font-size:15px;color:#a6a8a1;max-width:80ch}
 
   function init(root) {
     if (root.__ss) return; root.__ss = 1;
+    var reduceMotion = RM;
     var d = root.dataset;
     var small = Math.min(innerWidth, innerHeight) < 700 || innerWidth < 900;
     var base = ((small && d.srcMobile) || d.src).replace(/\/$/, '');
@@ -355,7 +365,7 @@ footer p{font-size:15px;color:#a6a8a1;max-width:80ch}
       if (/(hidden|auto|scroll)/.test(cs.overflowX + cs.overflowY)) console.warn('[scroll-seq] position:sticky blocked by overflow on', el, '— set overflow-x:clip on it');
     }
     var editor = document.body.classList.contains('elementor-editor-active');
-    if (RM || editor) { root.classList.add('ss-static'); beats.forEach(function (b) { b.style.opacity = 1; }); return; }
+    if (reduceMotion || editor || !ctx) { root.classList.add('ss-static'); beats.forEach(function (b) { b.style.opacity = 1; }); if (editor || !ctx) return; }
 
     // coarse-to-fine load order: first, last, then every 32nd, 16th ... frame
     var imgs = new Array(N), order = [0, N - 1], seen = new Uint8Array(N), cur = 0, started = false;
@@ -365,7 +375,7 @@ footer p{font-size:15px;color:#a6a8a1;max-width:80ch}
       if (cur >= order.length) return;
       var i = order[cur++], im = new Image();
       im.decoding = 'async';
-      im.onload = function () { imgs[i] = im; if (i === 0) root.classList.add('ss-ready'); dirty = true; worker(); };
+      im.onload = function () { imgs[i] = im; dirty = true; worker(); };
       im.onerror = worker;
       im.src = url(i);
     }
@@ -409,27 +419,68 @@ footer p{font-size:15px;color:#a6a8a1;max-width:80ch}
       requestAnimationFrame(tick);
       if (!visible) { last = now; return; }
       resize();
-      var p = progress();
+      var scrollPosition = progress();
+      if (!reduceMotion && scrollPosition !== previousScroll) {
+        manual = false;
+        playing = false;
+        button.textContent = 'Play animation';
+      }
+      previousScroll = scrollPosition;
+      if (reduceMotion && !manual) return;
+      if (playing && root.classList.contains('ss-ready')) {
+        position = Math.min(1, position + Math.min(100, now - (last || now)) / 8000);
+        if (position === 1) { playing = false; button.textContent = 'Play animation'; }
+      }
+      var p = manual ? position : scrollPosition;
       target = p * (N - 1);
       var dt = Math.min((now - (last || now)) / 1000, 0.1); last = now;
+      if (manual) head = target;
       head += (target - head) * (1 - Math.exp(-dt * 12)); // frame-rate independent smoothing
       if (Math.abs(target - head) < 0.01) head = target;
-      if (p !== lastP) { beatsAt(p); lastP = p; }
+      if (!reduceMotion && p !== lastP) { beatsAt(p); lastP = p; }
       var i = Math.floor(head), t = head - i, a = nearest(i), b = t > 0.02 && i + 1 < N ? imgs[i + 1] : null;
-      if (!a) return;
+      if (!a || !cw || !ch) return;
       if (!dirty && a === pa && b === pb && (!b || Math.abs(t - pt) < 0.005)) return; // nothing changed
       ctx.fillStyle = bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
       draw(a, 1); if (b) draw(b, t);           // crossfade between neighbouring frames
+      root.classList.add('ss-ready');
       pa = a; pb = b; pt = t; dirty = false;
     }
     var pa = null, pb = null, pt = 0;
 
+    var controls = stage.querySelector('.film-controls'), button = controls.querySelector('button');
+    var playing = false, manual = false, position = 0, previousScroll = progress();
+    controls.hidden = false;
+    var enableScroll = controls.querySelector('[data-enable-scroll]');
+    enableScroll.hidden = !reduceMotion;
+    enableScroll.addEventListener('click', function () {
+      reduceMotion = false;
+      playing = false;
+      manual = false;
+      button.textContent = 'Play animation';
+      root.classList.remove('ss-static', 'film-manual');
+      enableScroll.hidden = true;
+      lastP = -1;
+      dirty = true;
+      root.scrollIntoView({block: 'start', behavior: 'instant'});
+      startLoading();
+    });
+    button.addEventListener('click', function () {
+      position = head / (N - 1);
+      if (!playing && position >= 0.99) position = 0;
+      playing = !playing;
+      manual = true;
+      previousScroll = progress();
+      root.classList.add('film-manual');
+      button.textContent = playing ? 'Pause' : 'Play animation';
+      startLoading();
+    });
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (e) {
-        e.forEach(function (x) { if (x.isIntersecting) startLoading(); });
+        e.forEach(function (x) { if (!reduceMotion && x.isIntersecting) startLoading(); });
       }, { rootMargin: '1200px 0px' }).observe(root);
       new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(root);
-    } else startLoading();
+    } else if (!reduceMotion) startLoading();
     requestAnimationFrame(tick);
   }
 
